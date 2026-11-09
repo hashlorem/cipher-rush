@@ -254,7 +254,7 @@ h1 { margin: 0; font-family: var(--display); font-stretch: 68%; font-weight: 800
     <header class="mast">
       <p class="kicker">Cybersecurity Essentials final exam reviewer</p>
       <h1>Cipher Rush</h1>
-      <p class="lede">50 questions on the topics of the course final, plus 6 drag-and-drop items. Every question explains its answer, so you learn why, not just what.</p>
+      <p class="lede">The 50 questions from the Cybersecurity Essentials final, word for word, plus a short matching drill. Every question explains its answer, so you learn why, not just what.</p>
     </header>
 
     <div class="group">
@@ -271,9 +271,10 @@ h1 { margin: 0; font-family: var(--display); font-stretch: 68%; font-weight: 800
     </div>
 
     <div class="group">
-      <div class="group-h"><h3>Untimed</h3><p>56 items, saves your place</p></div>
-      <button class="mode" id="playClassic"><span class="mt"><b>Classic exam</b><span class="md" id="classicLbl">No timer · 50 questions + 6 drag-and-drop</span></span><span class="go" aria-hidden="true">→</span></button>
+      <div class="group-h"><h3>Untimed</h3><p>saves your place</p></div>
+      <button class="mode" id="playClassic"><span class="mt"><b>Classic exam</b><span class="md" id="classicLbl">No timer · the 50 exam questions in order</span></span><span class="go" aria-hidden="true">→</span></button>
       <button class="mode" id="playPractice"><span class="mt"><b>Practice exam</b><span class="md" id="practiceLbl">Like Classic, but each answer is marked when you submit it</span></span><span class="go" aria-hidden="true">→</span></button>
+      <button class="mode" id="playDrill"><span class="mt"><b>Match drill</b><span class="md" id="drillLbl">6 matching items, drag or tap</span></span><span class="go" aria-hidden="true">→</span></button>
     </div>
 
     <div class="foot">
@@ -318,7 +319,7 @@ h1 { margin: 0; font-family: var(--display); font-stretch: 68%; font-weight: 800
           <span><i class="a"></i>Answered</span>
           <span><i></i>Not answered</span>
           <span><i class="f"></i>Flagged for review</span>
-          <span><i class="d">D</i>Drag and drop</span>
+          <span id="lgDD"><i class="d">D</i>Drag and drop</span>
           <span class="lg-mark" hidden><i class="g"></i>Marked correct</span>
           <span class="lg-mark" hidden><i class="b"></i>Marked wrong</span>
         </div>
@@ -346,7 +347,7 @@ h1 { margin: 0; font-family: var(--display); font-stretch: 68%; font-weight: 800
 <div class="flash" id="flash"></div>
 
 <script>
-// Original questions written to cover the Cybersecurity Essentials final exam topics.
+// All 50 items from the Cybersecurity Essentials course final exam (itexamanswers, version 2.0), with the source's answer keys.
 // a = indexes of correct options; more than one means pick-several.
 const Q = [
  {q:"Which of the following statements describes a distributed denial of service (DDoS) attack?", o:["An attacker sends an enormous quantity of data that a server cannot handle, using a botnet","An attacker builds a botnet comprised of zombie devices","A computer accepts data packets based on the MAC address of another computer","An attacker views network traffic to gain access to authentication credentials"], a:[0], x:"An attacker builds a network of infected hosts, called a botnet, comprised of zombies. Zombies are the infected hosts. The attacker uses handler systems to control the zombies. The zombie computers constantly scan and infect more hosts, creating more zombies. When ready, the hacker instructs the handler systems to make the botnet of zombies carry out a DDoS attack."},
@@ -356,12 +357,12 @@ const Q = [
  {q:"Several @Apollo employees have reported that the network access is slow. After investigation, the network administrator has learned that one employee downloaded a third-party scanning program for the printer. What type of malware might have been introduced that is causing slow performance of the network?", o:["Spam","Phishing","Worm","Virus"], a:[2], x:"Worms are malicious code that replicates by independently exploiting vulnerabilities in networks. Worms usually slow down networks. Whereas a virus requires a host program to run, worms can run by themselves. Other than the initial infection, worms no longer require user participation. After a worm affects a host, it is able to spread very quickly over the network. Worms share similar patterns. They all have an enabling vulnerability, a way to propagate themselves, and they all contain a payload."},
  {q:"Which of the following is a feature of a cryptographic hash function?", o:["The output has a variable length","Hashing requires a public and private key","The hash input can be calculated given the output value","The hash function has a one-way mathematical function"], a:[3], x:"A cryptographic hash function has the following properties: The input can be any length. The output has a fixed length. The hash function is one-way and is not reversible. Two different input values will almost never result in the same hash."},
  {q:"Before data is sent out for analysis, what technique can be used to replace sensitive data in non-production environments to protect the underlying information?", o:["Steganalysis","Data masking substitution","Software obfuscation","Steganography"], a:[1], x:"Technologies exist to confuse attackers by changing data and using techniques to hide the original data."},
- {q:"Which of the following processes are examples of logical access controls? (Select three correct answers)", o:["Biometrics to validate physical characteristics","Firewalls to monitor traffic","Swipe cards to allow access to a restricted area","Guards to monitor security screens","Fences to protect the perimeter of a building","Intrusion detection system to watch for suspicious network activity"], a:[0,1,5], x:"Logical access controls includes but is not limited to the following: Encryption Smart cards Passwords Biometrics Access Control Lists (ACLs) Protocols Firewalls Intrusion Detection Systems (IDS)"},
- {q:"Which of the following technologies can be implemented as part of an authentication system to verify the identity of employees? (Select two correct answers)", o:["A fingerprint","A SHA-1 hash","A smart card reader","A mantrap"], a:[0,2], x:"A username is the most common method used to identify a user. A username can be an alphanumeric combination, a personal identification number (PIN), a smart card or biometric — such as a fingerprint, retina scan or voice recognition."},
+ {q:"Which of the following processes are examples of logical access controls?", o:["Biometrics to validate physical characteristics","Firewalls to monitor traffic","Swipe cards to allow access to a restricted area","Guards to monitor security screens","Fences to protect the perimeter of a building","Intrusion detection system to watch for suspicious network activity"], a:[0,1,5], x:"Logical access controls includes but is not limited to the following: Encryption Smart cards Passwords Biometrics Access Control Lists (ACLs) Protocols Firewalls Intrusion Detection Systems (IDS)"},
+ {q:"Which of the following technologies can be implemented as part of an authentication system to verify the identity of employees?", o:["A fingerprint","A SHA-1 hash","A smart card reader","A mantrap"], a:[0,2], x:"A username is the most common method used to identify a user. A username can be an alphanumeric combination, a personal identification number (PIN), a smart card or biometric — such as a fingerprint, retina scan or voice recognition."},
  {q:"Two @Apollo employees use the same password to log in to the network, which means that both people have the exact same hash for their passwords. What could be implemented to prevent this?", o:["RSA","Peppering","Pseudo-random generator","Salting"], a:[3], x:"A password is stored as a combination of both a hash and a salt."},
  {q:"What term is used to describe the science of making and breaking secret codes?", o:["Spoofing","Cryptography","Jamming","Factorization","Impersonation"], a:[1], x:"Cryptology is the science of making and breaking codes to make sure that cyber criminals cannot easily compromise protected information."},
  {q:"You are using a public key encryption to exchange a message with one of your colleagues. Which key should you use to encrypt your message?", o:["Your colleague's public key","Your public key","Your colleague's private key","Your private key"], a:[0], x:"Encrypt with the recipient's public key so only their matching private key can decrypt it. Using your own key would let anyone who holds your public key read the message."},
- {q:"Which of the following are states of data? (Select three correct answers)", o:["Data in transit","Data in process","Data in storage","Decrypted data","Purged data","Encrypted data"], a:[0,1,2], x:"The three possible data states: Data in transit. Data at rest or in storage. Data in process."},
+ {q:"Which of the following are states of data?", o:["Data in transit","Data in process","Data in storage","Decrypted data","Purged data","Encrypted data"], a:[0,1,2], x:"The three possible data states: Data in transit. Data at rest or in storage. Data in process."},
  {q:"Passwords, passphrases and PINs are examples of which of the following security terms?", o:["Authentication","Authorization","Access","Identification"], a:[0], x:"Authentication methods are used to strengthen access control systems. It is important to understand the available authentication methods."},
  {q:"Which of the following hashing technologies requires the exchange of keys?", o:["MD5","AES","Salting","HMAC"], a:[3], x:"The difference between HMAC and hashing is the use of keys."},
  {q:"What type of cipher encrypts plaintext one byte or one bit at a time?", o:["Block","Elliptical","Enigma","Stream","Hash"], a:[3], x:"Stream ciphers encrypt plaintext one byte or one bit at a time, and can be much faster than block ciphers."},
@@ -374,7 +375,7 @@ const Q = [
  {q:"Which of the following protocols would you use to provide security for employees that access an organization's systems remotely from home?", o:["WPA","SCP","Telnet","SSH"], a:[3], x:"Various application layer protocols are used to for communications between systems. A secure protocol provides a secure channel over an unsecured network."},
  {q:"Mutual authentication can prevent which type of attack?", o:["Wireless IP spoofing","Wireless sniffing","Man-in-the-middle","Wireless poisoning"], a:[2], x:"A cybersecurity specialist must be aware of the technologies and measures that are used as countermeasures to protect the organization from threats and vulnerabilities."},
  {q:"Apollo permits employees to work from home. Which technology should be implemented to ensure data confidentiality as it is transmitted?", o:["SHS","RAID","VLANs","VPN"], a:[3], x:"Protecting data confidentiality requires an understanding of the technologies used to protect data in all three data states."},
- {q:"Which of the following protocols use the Advanced Encryption Standard (AES)? (Select two correct answers)", o:["WEP","WPA","EAP","TKIP","WPA2"], a:[1,4], x:"Various protocols can be used to provide secure communication systems. AES is the strongest encryption algorithm."},
+ {q:"Which of the following protocols use the Advanced Encryption Standard (AES)?", o:["WEP","WPA","EAP","TKIP","WPA2"], a:[1,4], x:"Various protocols can be used to provide secure communication systems. AES is the strongest encryption algorithm."},
  {q:"What does the term BYOD mean?", o:["Bring your own decision","Buy your own device","Bring your own device","Baseline your own disaster"], a:[2], x:"The term bring-your-own-device is used to describe mobile devices such as iPhones, smartphones, tablets, and other devices"},
  {q:"What solution should be used to enforce the security policy that a computing device must be updated with the latest antimalware software before it can connect to an organization’s network?", o:["NAC","VPN","SAN","NAS"], a:[0], x:"A cybersecurity specialist must be aware of the technologies available to enforce its organization’s security policy."},
  {q:"You have been asked to work with fellow @Apollo employees to improve data integrity during initial data entry and data modification operations. Several staff members ask you why the new data entry screens limit the types and size of data that can be entered into specific fields. You explain that this is a data integrity control. What does this mean?", o:["A limitation rule which has been implemented to prevent unauthorized staff from entering sensitive data","Data encryption operations that prevent any unauthorized users from accessing sensitive data","Data entry controls which only allow entry staff to view current data","A validation rule which has been implemented to ensure completeness, accuracy and consistency of data"], a:[3], x:"Data integrity deals with data validation."},
@@ -390,7 +391,7 @@ const Q = [
  {q:"Keeping data backups offsite is an example of which type of disaster recovery control?", o:["Corrective","Preventive","Detective","Management"], a:[1], x:"A disaster recovery plan enables an organization to prepare for potential disasters and minimize the resulting downtime."},
  {q:"Which of the following is a critical step when carrying out a business impact analysis (BIA)?", o:["Determining if a warm or hot site will be used","Creating a vendor contact list","Identifying acceptable recovery times","Documenting application vulnerabilities"], a:[2], x:"A BIA works out how long each critical function can stay down and how much data can be lost, which sets the recovery objectives. Choosing a hot or warm site comes after that."},
  {q:"What is an example of a business continuity plan?", o:["Identifying critical business processes, resources and relationships between systems by focusing on the consequences of an interruption to critical business functions","Getting critical systems to another location while the repair of the original facility is underway","Ensuring critical systems are online during a disaster","Identifying and analyzing potential events that may negatively impact an organization’s assets"], a:[1], x:"A business continuity plan (BCP) is a broader plan than a disaster recovery plan (DRP) because it can include getting critical systems to another location while the repair of the original facility is underway. In such a scenario, personnel continues to perform all business processes in an alternate manner until normal operations resume."},
- {q:"What values are required to calculate annual loss expectancy? (Choose two correct answers)", o:["Single loss expectancy","Asset value","Frequency factor","Annualized rate of occurrence","Exposure factor"], a:[0,3], x:"Single loss expectancy, annualized rate of occurrence, and annualized loss expectancy are used in a quantitative risk analysis"},
+ {q:"What values are required to calculate annual loss expectancy?", o:["Single loss expectancy","Asset value","Frequency factor","Annualized rate of occurrence","Exposure factor"], a:[0,3], x:"Single loss expectancy, annualized rate of occurrence, and annualized loss expectancy are used in a quantitative risk analysis"},
  {q:"@Apollo wants to adopt a labeling system based on the value, sensitivity and criticality of the information it handles. What element of risk management would you recommend?", o:["Asset availability","Asset standardization","Asset classification","Asset identification"], a:[2], x:"One of the most important steps in risk management is asset classification."},
  {q:"An organization has installed antimalware. What type of security control is this?", o:["Detective control","Deterrent control","Compensative control","Recovery control"], a:[3], x:"A cybersecurity specialist must be aware of the technologies and measures that are used as countermeasures to protect the organization from threats and vulnerabilities."},
  {q:"In which of the following situations would a detective control be warranted?", o:["When an organization needs to repair damage","When an organization cannot use a guard dog and must therefore consider alternative control options","To restore an organization’s system to a normal state after experiencing a breach","When an organization needs to identify prohibited activity"], a:[3], x:"Access control prevents an unauthorized user from gaining access to sensitive data and networked systems. There are several technologies used to implement effective access control strategies."},
@@ -638,7 +639,9 @@ function refreshHome() {
     const b = document.createElement('span'); b.innerHTML = 'Accuracy <b></b>'; b.querySelector('b').textContent = best.acc + '%';
     $('bestLine').append(a, b);
   }
-  [['cr.classic', 'cr.classicBest', 'classicLbl', 'No timer · 50 questions + 6 drag-and-drop'], ['cr.practiceRun', 'cr.practiceBest', 'practiceLbl', 'Like Classic, but each answer is marked when you submit it']].forEach(([key, bestKey, lbl, def]) => {
+  [['cr.classic', 'cr.classicBest', 'classicLbl', 'No timer · the 50 exam questions in order'],
+   ['cr.practiceRun', 'cr.practiceBest', 'practiceLbl', 'Like Classic, but each answer is marked when you submit it'],
+   ['cr.drill', 'cr.drillBest', 'drillLbl', '6 matching items, drag or tap']].forEach(([key, bestKey, lbl, def]) => {
     const cs = store.get(key, null), cb = store.get(bestKey, 0);
     const inProg = cs && cs.items && !cs.submitted && cs.ans && Object.keys(cs.ans).length;
     $(lbl).textContent = (inProg ? 'Resume at question ' + (cs.i + 1) : def) + (cb ? ' · best ' + cb + '%' : '');
@@ -668,7 +671,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ---------- Classic exam (no timer) ----------
-// Original drag-and-drop matching items on the same course topics. pairs: [description, item].
+// Drag-and-drop matching drill. Original items on the same course topics. pairs: [description, item].
 const M = [
  {q:"Match each attack to its description.", after:4, pairs:[["A fake email that looks like it came from your bank","Phishing"],["A phone call from someone posing as IT support","Vishing"],["A text message with a link to a fake delivery site","Smishing"],["Tampered DNS sends users to a fake site even when they type the right address","Pharming"]], x:"Phishing is email, vishing is voice, smishing is SMS. Pharming redirects traffic without the victim clicking anything suspicious."},
  {q:"Match each state of data to an example.", after:12, pairs:[["A customer database stored on a server's disk","At rest"],["An email crossing the internet to its recipient","In transit"],["Payroll figures loaded in RAM while totals are calculated","In process"]], x:"Stored data is at rest, moving data is in transit, and data being used by the CPU is in process."},
@@ -680,24 +683,21 @@ const M = [
 
 let C = null, ddPick = null, ddDrag = null;
 
-function classicOrder() {
-  const items = [];
-  Q.forEach((_, i) => {
-    items.push({ kind: 'mc', id: i, order: shuffle(Q[i].o.map((_, k) => k)) });
-    M.forEach((m, j) => { if (m.after === i) items.push({ kind: 'dd', id: j, order: shuffle(m.pairs.map((_, k) => k)) }); });
-  });
-  return items;
+function classicOrder(kind) {
+  if (kind === 'drill') return M.map((m, j) => ({ kind: 'dd', id: j, order: shuffle(m.pairs.map((_, k) => k)) }));
+  return Q.map((_, i) => ({ kind: 'mc', id: i, order: shuffle(Q[i].o.map((_, k) => k)) }));
 }
-const CX_KEY = { exam: 'cr.classic', practice: 'cr.practiceRun' };
-function newClassic(kind) { return { kind, items: classicOrder(), ans: {}, flags: {}, checked: {}, i: 0, submitted: false, practice: kind === 'practice', confirm: false }; }
+const CX_KEY = { exam: 'cr.classic', practice: 'cr.practiceRun', drill: 'cr.drill' };
+function newClassic(kind) { return { kind, items: classicOrder(kind), ans: {}, flags: {}, checked: {}, i: 0, submitted: false, practice: kind === 'practice', confirm: false }; }
 function saveClassic() { if (C) store.set(CX_KEY[C.kind], C); }
+const subLabel = () => C && C.kind === 'drill' ? 'Submit drill' : 'Submit exam';
 
 function openClassic(kind) {
-  kind = kind === 'practice' ? 'practice' : 'exam';
+  kind = kind === 'practice' ? 'practice' : kind === 'drill' ? 'drill' : 'exam';
   const saved = store.get(CX_KEY[kind], null);
   C = saved && saved.items && !saved.submitted ? saved : newClassic(kind);
   C.kind = kind; C.practice = kind === 'practice'; C.confirm = false; ddPick = null;
-  $('cxModeChip').innerHTML = C.practice ? '<b>Practice exam</b> · answers marked as you go' : '<b>Classic exam</b> · no timer';
+  $('cxModeChip').innerHTML = kind === 'drill' ? '<b>Match drill</b> · drag and drop' : C.practice ? '<b>Practice exam</b> · answers marked as you go' : '<b>Classic exam</b> · no timer';
   show('classic');
   renderClassic();
 }
@@ -796,7 +796,7 @@ function renderClassic() {
     const p = document.createElement('span');
     p.textContent = (un ? un + ' question' + (un > 1 ? 's are' : ' is') + ' not answered. ' : 'Every question is answered. ') + (fl ? fl + ' flagged for review. ' : '') + 'Submit and see your score?';
     const r = document.createElement('div'); r.className = 'r';
-    const yes = document.createElement('button'); yes.className = 'cbtn warn'; yes.textContent = 'Submit exam'; yes.onclick = submitClassic;
+    const yes = document.createElement('button'); yes.className = 'cbtn warn'; yes.textContent = subLabel(); yes.onclick = submitClassic;
     const no = document.createElement('button'); no.className = 'cbtn'; no.textContent = 'Keep working'; no.onclick = () => { C.confirm = false; renderClassic(); };
     r.append(yes, no); cf.append(p, r); main.appendChild(cf);
   }
@@ -812,7 +812,7 @@ function renderClassic() {
   }
   const next = document.createElement('button'); next.className = 'cbtn' + (C.practice && !checked ? '' : ' pri');
   if (k + 1 < C.items.length) { next.textContent = 'Next'; next.onclick = () => goClassic(k + 1); }
-  else { next.textContent = 'Submit exam'; next.onclick = () => { C.confirm = true; renderClassic(); }; }
+  else { next.textContent = subLabel(); next.onclick = () => { C.confirm = true; renderClassic(); }; }
   r.appendChild(next);
   nav.append(prev, r); main.appendChild(nav);
 
@@ -903,6 +903,7 @@ function renderGrid() {
     g.appendChild(b);
   });
   document.querySelectorAll('.lg-mark').forEach(e => e.hidden = !(C.practice || C.submitted));
+  $('lgDD').hidden = C.kind !== 'drill';
   const done = C.items.filter((_, k) => isAnswered(k)).length;
   $('cxProg').innerHTML = '<b></b> of <b></b> answered';
   $('cxProg').querySelectorAll('b')[0].textContent = done; $('cxProg').querySelectorAll('b')[1].textContent = C.items.length;
@@ -913,7 +914,7 @@ function renderGrid() {
     line.querySelectorAll('b')[0].textContent = right; line.querySelectorAll('b')[1].textContent = ks.length;
     $('cxProg').appendChild(line);
   }
-  $('cxSubmitSide').textContent = C.submitted ? 'Start a new attempt' : 'Submit exam';
+  $('cxSubmitSide').textContent = C.submitted ? 'Start a new attempt' : subLabel();
 }
 
 function submitClassic() {
@@ -921,7 +922,7 @@ function submitClassic() {
   const total = C.items.reduce((s, _, k) => s + scoreItem(k), 0);
   const pct = Math.round(total / C.items.length * 1000) / 10;
   C.result = { pct, total };
-  const bk = C.practice ? 'cr.practiceBest' : 'cr.classicBest';
+  const bk = C.kind === 'drill' ? 'cr.drillBest' : C.practice ? 'cr.practiceBest' : 'cr.classicBest';
   const b = store.get(bk, 0); if (pct > b) store.set(bk, pct);
   saveClassic(); renderClassic(); refreshHome(); window.scrollTo(0, 0);
 }
@@ -944,7 +945,7 @@ function renderClassicResults() {
   const full = C.items.filter((_, k) => scoreItem(k) === 1).length;
   sc.innerHTML = '<span class="big"></span><span></span>';
   sc.querySelector('.big').textContent = C.result.pct + '%';
-  sc.querySelectorAll('span')[1].textContent = full + ' of ' + C.items.length + ' fully correct. Pick-several and drag-and-drop items give partial credit.';
+  sc.querySelectorAll('span')[1].textContent = full + ' of ' + C.items.length + ' fully correct. ' + (C.kind === 'drill' ? 'Each match counts on its own.' : 'Pick-several items give partial credit.');
   const r = document.createElement('div'); r.className = 'cx-nav'; r.style.borderTop = '0'; r.style.paddingTop = '0';
   const again = document.createElement('button'); again.className = 'cbtn pri'; again.textContent = 'Start a new attempt';
   again.onclick = () => { C = newClassic(C.kind); saveClassic(); renderClassic(); window.scrollTo(0, 0); };
@@ -969,6 +970,7 @@ function renderClassicResults() {
 
 $('playClassic').onclick = () => openClassic('exam');
 $('playPractice').onclick = () => openClassic('practice');
+$('playDrill').onclick = () => openClassic('drill');
 $('cxHome').onclick = () => { saveClassic(); show('home'); refreshHome(); };
 $('cxSubmitSide').onclick = () => {
   if (C.submitted) { C = newClassic(C.kind); saveClassic(); renderClassic(); window.scrollTo(0, 0); return; }
