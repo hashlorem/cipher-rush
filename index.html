@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Cybersecurity Essentials final exam reviewer: timed game mode, classic exam and practice exam with drag-and-drop.">
+<title>Cipher Rush</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,600..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one column on flat black. Hairline rules instead of cards, condensed display type for names and numbers, flat ink-colored answer blocks with keycaps. */
+:root {
+  color-scheme: dark;
+  --bg: #000000;
+  --s1: #0C0C0C;
+  --s2: #141414;
+  --line: #262626;
+  --line-2: #3B3B3B;
+  --fg: #F1F0EC;
+  --muted: #8E8D88;
+  --dim: #5E5D59;
+  --good: #46BE86;
+  --bad: #E2564C;
+  --warn: #D5A23F;
+  --a0: #B9402C; --a1: #2E5BA8; --a2: #9C6F0E; --a3: #2C7651; --a4: #74479C; --a5: #1D717C;
+  --display: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+html, body { height: 100%; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 920px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 40px; min-height: 100%; box-sizing: border-box; display: flex; flex-direction: column; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+.disp { font-family: var(--display); font-stretch: 72%; font-weight: 800; letter-spacing: -.01em; }
+
+/* Home */
+.home { display: grid; gap: 40px; padding-block: 3vh 0; }
+.mast { display: grid; gap: 14px; border-bottom: 1px solid var(--line); padding-bottom: 28px; }
+.kicker { margin: 0; color: var(--muted); font-size: 14px; }
+h1 { margin: 0; font-family: var(--display); font-stretch: 68%; font-weight: 800; font-size: clamp(64px, 14vw, 148px); line-height: .86; letter-spacing: -.02em; text-wrap: balance; }
+.lede { margin: 0; color: var(--muted); max-width: 56ch; font-size: 17px; }
+.group { display: grid; gap: 0; }
+.group-h { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.group-h h3 { margin: 0; font-family: var(--display); font-stretch: 72%; font-weight: 700; font-size: 26px; letter-spacing: 0; }
+.group-h p { margin: 0; color: var(--muted); font-size: 13px; font-family: var(--mono); }
+.mode { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px; width: 100%; text-align: left; background: transparent; border: 0; border-bottom: 1px solid var(--line); padding: 18px 4px; transition: background .12s, padding .12s; }
+.mode:hover:not(:disabled) { background: var(--s2); padding-inline: 14px; }
+.mode:disabled { cursor: not-allowed; }
+.mode:disabled .mt b, .mode:disabled .go { color: var(--dim); }
+.mt { display: grid; gap: 2px; min-width: 0; }
+.mt b { font-size: 20px; font-weight: 600; }
+.md { color: var(--muted); font-size: 14px; }
+.go { font-family: var(--mono); font-size: 20px; color: var(--muted); }
+.mode:hover:not(:disabled) .go { color: var(--fg); }
+.scoring { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0 24px; margin: 14px 0 0; font-size: 13px; color: var(--muted); }
+.scoring div { display: flex; gap: 10px; padding: 6px 0; }
+.scoring dt { font-family: var(--mono); color: var(--fg); min-width: 6.5ch; }
+.scoring dd { margin: 0; }
+.foot { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: center; color: var(--muted); font-size: 13px; font-family: var(--mono); }
+.best { display: flex; gap: 18px; flex-wrap: wrap; }
+.best b { color: var(--fg); font-weight: 500; }
+.reflink { color: var(--muted); font-family: var(--mono); font-size: 13px; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line-2); }
+.reflink:hover { color: var(--fg); text-decoration-color: var(--fg); }
+.toggle { background: transparent; border: 1px solid var(--line-2); padding: 6px 12px; font-size: 13px; font-family: var(--mono); color: var(--muted); }
+.toggle:hover { color: var(--fg); border-color: var(--fg); }
+
+/* Game */
+.stage { display: grid; gap: 18px; align-content: start; }
+.hud { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.hudstats { display: flex; gap: 28px; margin: 0; flex-wrap: wrap; }
+.hudstats div { display: grid; gap: 0; }
+.hudstats dt { font-size: 12px; color: var(--muted); }
+.hudstats dd { margin: 0; font-family: var(--display); font-stretch: 72%; font-weight: 700; font-size: 28px; line-height: 1.05; font-variant-numeric: tabular-nums; }
+#hudStreak[data-on="1"] { color: var(--warn); }
+.quit { background: transparent; border: 1px solid var(--line-2); padding: 7px 12px; font-size: 13px; font-family: var(--mono); color: var(--muted); }
+.quit:hover { color: var(--fg); border-color: var(--fg); }
+.modelabel { font-size: 14px; color: var(--muted); }
+.modelabel b { color: var(--fg); font-weight: 600; }
+.rail { position: relative; height: 3px; background: var(--line); overflow: hidden; }
+.rail i { position: absolute; inset: 0 auto 0 0; width: 100%; background: var(--fg); transform-origin: left; }
+.rail i.warn { background: var(--warn); } .rail i.crit { background: var(--bad); }
+.prompt { display: grid; gap: 10px; padding-block: 6px 4px; }
+.prompt .meta { display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+.tag { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.tag.multi { color: var(--warn); }
+.clock { font-family: var(--display); font-stretch: 68%; font-weight: 800; font-size: 56px; line-height: .9; min-width: 2ch; text-align: right; font-variant-numeric: tabular-nums; }
+.prompt h2 { margin: 0; font-weight: 600; font-size: clamp(21px, 3vw, 30px); line-height: 1.25; letter-spacing: -.01em; text-wrap: balance; max-width: 34ch; }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tile { position: relative; border: 0; border-radius: 3px; padding: 16px 16px 16px 58px; min-height: 76px; text-align: left; font-weight: 500; font-size: 17px; line-height: 1.3; color: #fff; display: flex; align-items: center; min-width: 0; overflow-wrap: anywhere; transition: opacity .2s, filter .2s; }
+.tile .kc { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; display: grid; place-items: center; font-family: var(--mono); font-size: 14px; font-weight: 500; border: 1px solid rgba(255,255,255,.55); border-bottom-width: 3px; border-radius: 4px; }
+.tile:hover:not(:disabled) { filter: brightness(1.12); }
+.tile:disabled { cursor: default; }
+.tile.c0 { background: var(--a0); } .tile.c1 { background: var(--a1); } .tile.c2 { background: var(--a2); }
+.tile.c3 { background: var(--a3); } .tile.c4 { background: var(--a4); } .tile.c5 { background: var(--a5); }
+.tile.sel { box-shadow: inset 0 0 0 3px #fff; }
+.tiles:not(.done) .tile.capped { opacity: .35; }
+.tile.sel::after { content: "Selected"; position: absolute; right: 10px; top: 8px; font-family: var(--mono); font-size: 11px; }
+.tiles.intro .tile { opacity: .18; }
+.tiles.done .tile { opacity: .22; }
+.tiles.done .tile.right { opacity: 1; box-shadow: inset 0 0 0 3px var(--good); }
+.tiles.done .tile.wrongpick { opacity: .9; box-shadow: inset 0 0 0 3px var(--bad); }
+.tiles.done .tile.right::after, .tiles.done .tile.wrongpick::after { position: absolute; right: 10px; top: 8px; font-family: var(--mono); font-size: 11px; padding: 1px 6px; background: #000; }
+.tiles.done .tile.right::after { content: "Correct"; color: var(--good); }
+.tiles.done .tile.wrongpick::after { content: "Your pick"; color: var(--bad); }
+.lockin { justify-self: end; border: 1px solid var(--fg); background: var(--fg); color: #000; padding: 11px 20px; font-weight: 600; font-size: 15px; }
+.lockin:disabled { background: transparent; color: var(--dim); border-color: var(--line-2); cursor: not-allowed; }
+.reveal { display: grid; gap: 10px; border-top: 1px solid var(--line); padding-top: 16px; animation: rise .25s ease-out; }
+.verdict { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+.verdict b { font-family: var(--display); font-stretch: 72%; font-weight: 800; font-size: 40px; line-height: 1; }
+.reveal.ok .verdict b { color: var(--good); }
+.reveal.no .verdict b { color: var(--bad); }
+.verdict .pts { font-family: var(--mono); font-size: 18px; font-variant-numeric: tabular-nums; }
+.verdict .bonus { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.reveal .why { display: none; }
+.reveal p { margin: 0; max-width: 68ch; color: var(--fg); }
+.next { justify-self: end; border: 1px solid var(--fg); background: var(--fg); color: #000; padding: 11px 20px; font-weight: 600; font-size: 15px; }
+.flash { position: fixed; inset: 0; pointer-events: none; opacity: 0; }
+.flash.ok { box-shadow: inset 0 0 0 6px var(--good); animation: fl .6s ease-out; }
+.flash.no { box-shadow: inset 0 0 0 6px var(--bad); animation: fl .6s ease-out; }
+@keyframes fl { 0% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes rise { 0% { transform: translateY(6px); opacity: 0; } 100% { transform: none; opacity: 1; } }
+
+/* End */
+.end { display: grid; gap: 28px; padding-block: 2vh 0; }
+.end .mast h1 { font-size: clamp(56px, 11vw, 112px); }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+.stat { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 14px 16px; display: grid; gap: 2px; }
+.stat .v { font-family: var(--display); font-stretch: 72%; font-weight: 800; font-size: 40px; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.stat .l { font-size: 13px; color: var(--muted); }
+.stat.hi .v { color: var(--warn); }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--line-2); background: transparent; padding: 11px 18px; font-size: 15px; font-weight: 600; display: grid; gap: 1px; text-align: left; }
+.btn span { font-weight: 400; font-size: 12px; color: var(--muted); font-family: var(--mono); }
+.btn.pri { background: var(--fg); color: #000; border-color: var(--fg); }
+.btn.pri span { color: #444; }
+.btn:hover:not(:disabled) { border-color: var(--fg); }
+.btn:disabled { opacity: .35; cursor: not-allowed; }
+.missed { display: grid; gap: 0; }
+.missed h3 { margin: 0 0 6px; font-family: var(--display); font-stretch: 72%; font-weight: 700; font-size: 24px; }
+.miss { border-top: 1px solid var(--line); padding: 14px 0; display: grid; gap: 4px; }
+.miss .mq { font-weight: 600; }
+.miss .ma { color: var(--good); font-family: var(--mono); font-size: 14px; }
+.miss .mx { color: var(--muted); font-size: 14px; }
+
+/* Classic and practice exam sheet */
+.cx { border: 1px solid var(--line); display: grid; grid-template-columns: minmax(0, 1fr) 232px; margin-top: 14px; }
+.cx-main { padding: 24px; display: grid; gap: 18px; align-content: start; min-width: 0; }
+.cx-side { border-left: 1px solid var(--line); background: var(--s1); padding: 18px 16px; display: grid; gap: 16px; align-content: start; }
+.cx-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 14px; color: var(--muted); font-family: var(--mono); }
+.cx-top b { color: var(--fg); font-weight: 500; }
+.cx-flag { background: transparent; border: 1px solid var(--line-2); padding: 5px 10px; font-size: 13px; color: var(--muted); }
+.cx-flag[aria-pressed="true"] { border-color: var(--warn); color: var(--warn); }
+.cx h2 { margin: 0; font-weight: 600; font-size: clamp(19px, 2.4vw, 24px); line-height: 1.3; letter-spacing: -.005em; text-wrap: pretty; }
+.cx-hint { margin: -8px 0 0; font-size: 14px; color: var(--muted); }
+.cx-opts { display: grid; gap: 6px; }
+.cx-opt { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--line); cursor: pointer; line-height: 1.4; transition: border-color .12s, background .12s; }
+.cx-opt:hover { border-color: var(--line-2); background: var(--s1); }
+.cx-opt input { margin-top: 3px; width: 17px; height: 17px; accent-color: var(--fg); flex: none; }
+.cx-opt.on { border-color: var(--fg); }
+.cx-opt.capped { opacity: .4; cursor: not-allowed; }
+.cx-opt.capped:hover { border-color: var(--line); background: transparent; }
+.cx-opt.good { border-color: var(--good); background: rgba(70,190,134,.08); }
+.cx-opt.bad { border-color: var(--bad); background: rgba(226,86,76,.08); }
+.cx-nav { display: flex; gap: 10px; justify-content: space-between; flex-wrap: wrap; padding-top: 16px; border-top: 1px solid var(--line); }
+.cx-nav .r { display: flex; gap: 10px; flex-wrap: wrap; }
+.cbtn { border: 1px solid var(--line-2); background: transparent; padding: 10px 16px; font-weight: 600; font-size: 14px; }
+.cbtn:hover:not(:disabled) { border-color: var(--fg); }
+.cbtn.pri, .cbtn.warn { background: var(--fg); border-color: var(--fg); color: #000; }
+.cbtn:disabled { opacity: .35; cursor: not-allowed; }
+.cx .feedback { border-left: 3px solid var(--line-2); padding: 4px 0 4px 14px; font-size: 15px; }
+.cx .feedback.ok { border-color: var(--good); } .cx .feedback.no { border-color: var(--bad); }
+.cx .feedback b { display: block; margin-bottom: 2px; font-family: var(--display); font-stretch: 72%; font-weight: 800; font-size: 22px; }
+.cx .feedback.ok b { color: var(--good); } .cx .feedback.no b { color: var(--bad); }
+.side-h { margin: 0; font-family: var(--display); font-stretch: 72%; font-weight: 700; font-size: 20px; }
+.grid-nav { display: grid; grid-template-columns: repeat(auto-fill, minmax(34px, 1fr)); gap: 4px; }
+.gn { height: 32px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 12px; font-family: var(--mono); position: relative; padding: 0; }
+.gn:hover { border-color: var(--line-2); color: var(--fg); }
+.gn.ans { background: var(--s2); color: var(--fg); border-color: var(--line-2); }
+.gn.cur { border-color: var(--fg); color: var(--fg); }
+.gn.flag::after { content: ""; position: absolute; top: 3px; right: 3px; width: 5px; height: 5px; background: var(--warn); }
+.gn.gdd { font-weight: 600; }
+.gn.good { background: rgba(70,190,134,.16); border-color: var(--good); color: var(--fg); }
+.gn.bad { background: rgba(226,86,76,.16); border-color: var(--bad); color: var(--fg); }
+.gn.part { background: rgba(213,162,63,.16); border-color: var(--warn); color: var(--fg); }
+.legend { display: grid; gap: 6px; font-size: 12px; color: var(--muted); }
+.legend span { display: flex; gap: 8px; align-items: center; }
+.legend i { width: 13px; height: 13px; border: 1px solid var(--line-2); display: inline-block; position: relative; font-style: normal; }
+.legend i.a { background: var(--s2); }
+.legend i.f::after { content: ""; position: absolute; top: 2px; right: 2px; width: 4px; height: 4px; background: var(--warn); }
+.legend i.d { display: grid; place-items: center; font-size: 8px; font-family: var(--mono); color: var(--fg); }
+.legend i.g { background: rgba(70,190,134,.3); border-color: var(--good); }
+.legend i.b { background: rgba(226,86,76,.3); border-color: var(--bad); }
+.prog { font-size: 13px; color: var(--muted); display: grid; gap: 2px; }
+.prog b { color: var(--fg); font-weight: 500; }
+.confirm { border: 1px solid var(--warn); padding: 14px; display: grid; gap: 12px; font-size: 15px; }
+.confirm .r { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* Drag and drop */
+.dd { display: grid; gap: 14px; }
+.dd-slots { display: grid; gap: 6px; }
+.dd-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: stretch; }
+.dd-desc { border: 1px solid var(--line); padding: 10px 12px; font-size: 15px; line-height: 1.35; display: flex; align-items: center; }
+.dd-slot { border: 1px dashed var(--line-2); min-height: 46px; display: flex; align-items: center; justify-content: center; padding: 4px; color: var(--dim); font-size: 13px; font-family: var(--mono); cursor: pointer; transition: background .12s, border-color .12s; }
+.dd-slot.hot { border-color: var(--fg); background: var(--s2); }
+.dd-slot.filled { border-style: solid; border-color: var(--line-2); }
+.dd-slot.good { border-color: var(--good); background: rgba(70,190,134,.08); }
+.dd-slot.bad { border-color: var(--bad); background: rgba(226,86,76,.08); }
+.dd-pool { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px; border: 1px solid var(--line); background: var(--s1); min-height: 58px; align-items: center; }
+.dd-pool:empty::before { content: "All items placed"; color: var(--dim); font-size: 13px; font-family: var(--mono); }
+.dd-chip { border: 1px solid var(--fg); background: var(--fg); color: #000; padding: 8px 12px; font-size: 14px; font-weight: 600; touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab; max-width: 100%; border-radius: 2px; }
+.dd-slot .dd-chip { width: 100%; text-align: center; }
+.dd-chip.picked { outline: 2px solid var(--warn); outline-offset: 2px; }
+.dd-chip:disabled { cursor: default; }
+.dd-ghost { position: fixed; z-index: 50; pointer-events: none; transform: translate(-50%, -50%); box-shadow: 0 12px 28px rgba(0,0,0,.6); }
+.dd-fix { font-size: 13px; color: var(--good); font-family: var(--mono); text-align: center; padding-top: 2px; }
+
+.cx-res { display: grid; gap: 18px; }
+.cx-score { display: flex; gap: 20px; flex-wrap: wrap; align-items: baseline; }
+.cx-score .big { font-family: var(--display); font-stretch: 68%; font-weight: 800; font-size: 76px; line-height: .9; }
+.cx-score span { color: var(--muted); font-size: 15px; max-width: 46ch; }
+.rv { border-top: 1px solid var(--line); padding: 14px 0 14px 14px; display: grid; gap: 4px; position: relative; }
+.rv::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; background: var(--line-2); }
+.rv.good::before { background: var(--good); } .rv.bad::before { background: var(--bad); } .rv.part::before { background: var(--warn); }
+.rv .rq { font-weight: 600; }
+.rv .ry { font-size: 14px; color: var(--muted); }
+.rv .rc { font-size: 14px; color: var(--good); font-family: var(--mono); }
+.rv .rx { font-size: 14px; }
+
+@media (max-width: 760px) {
+  .cx { grid-template-columns: 1fr; }
+  .cx-side { border-left: 0; border-top: 1px solid var(--line); }
+  .cx-main { padding: 18px 16px; }
+  .dd-row { grid-template-columns: 1fr; gap: 4px; }
+}
+@media (max-width: 560px) {
+  .wrap { padding-inline: 16px; }
+  .tiles { grid-template-columns: 1fr; }
+  .tile { min-height: 60px; font-size: 16px; }
+  .clock { font-size: 44px; }
+  .hudstats { gap: 20px; }
+  .hudstats dd { font-size: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section id="home" class="home">
+    <header class="mast">
+      <p class="kicker">Cybersecurity Essentials final exam reviewer</p>
+      <h1>Cipher Rush</h1>
+      <p class="lede">50 questions on the topics of the course final, plus 6 drag-and-drop items. Every question explains its answer, so you learn why, not just what.</p>
+    </header>
+
+    <div class="group">
+      <div class="group-h"><h3>Timed</h3><p>speed scoring and streaks</p></div>
+      <button class="mode" id="playFull"><span class="mt"><b>Full run</b><span class="md">All 50 questions, shuffled</span></span><span class="go" aria-hidden="true">→</span></button>
+      <button class="mode" id="playQuick"><span class="mt"><b>Quick round</b><span class="md">15 random questions</span></span><span class="go" aria-hidden="true">→</span></button>
+      <button class="mode" id="playMissed" disabled><span class="mt"><b>Missed only</b><span class="md" id="missedLbl">Play a run first</span></span><span class="go" aria-hidden="true">→</span></button>
+      <dl class="scoring">
+        <div><dt>1,000</dt><dd>max per question, faster keeps more</dd></div>
+        <div><dt>+100</dt><dd>per answer in a streak, up to +500</dd></div>
+        <div><dt>20s/30s</dt><dd>pick-one / pick-several</dd></div>
+        <div><dt>1–6</dt><dd>keys answer, Enter continues</dd></div>
+      </dl>
+    </div>
+
+    <div class="group">
+      <div class="group-h"><h3>Untimed</h3><p>56 items, saves your place</p></div>
+      <button class="mode" id="playClassic"><span class="mt"><b>Classic exam</b><span class="md" id="classicLbl">No timer · 50 questions + 6 drag-and-drop</span></span><span class="go" aria-hidden="true">→</span></button>
+      <button class="mode" id="playPractice"><span class="mt"><b>Practice exam</b><span class="md" id="practiceLbl">Like Classic, but each answer is marked when you submit it</span></span><span class="go" aria-hidden="true">→</span></button>
+    </div>
+
+    <div class="foot">
+      <div class="best" id="bestLine"></div>
+      <a class="reflink" href="https://itexamanswers.net/cybersecurity-essentials-course-final-exam-answers.html" target="_blank" rel="noopener">Compare with the reference exam ↗</a>
+      <button class="toggle" id="soundBtn" aria-pressed="true">Sound: on</button>
+    </div>
+  </section>
+
+  <section id="game" hidden>
+    <div class="stage">
+      <div class="hud">
+        <dl class="hudstats">
+          <div><dt>Question</dt><dd id="hudN">1 / 50</dd></div>
+          <div><dt>Score</dt><dd id="hudScore">0</dd></div>
+          <div><dt>Streak</dt><dd id="hudStreak" data-on="0">0</dd></div>
+        </dl>
+        <button class="quit" id="quitBtn">End run</button>
+      </div>
+      <div class="rail" aria-hidden="true"><i id="rail"></i></div>
+      <div class="prompt">
+        <div class="meta"><span class="tag" id="qTag">Pick 1</span><span class="clock" id="clock" aria-live="off">20</span></div>
+        <h2 id="qText"></h2>
+      </div>
+      <div class="tiles" id="tiles"></div>
+      <button class="lockin" id="lockBtn" hidden disabled>Lock in</button>
+      <div id="revealBox"></div>
+    </div>
+  </section>
+
+  <section id="classic" hidden>
+    <div class="hud">
+      <span class="modelabel" id="cxModeChip">Classic exam · no timer</span>
+      <button class="quit" id="cxHome">Save and exit</button>
+    </div>
+    <div class="cx">
+      <div class="cx-main" id="cxMain"></div>
+      <aside class="cx-side">
+        <p class="side-h">Questions</p>
+        <div class="grid-nav" id="cxGrid"></div>
+        <div class="legend">
+          <span><i class="a"></i>Answered</span>
+          <span><i></i>Not answered</span>
+          <span><i class="f"></i>Flagged for review</span>
+          <span><i class="d">D</i>Drag and drop</span>
+          <span class="lg-mark" hidden><i class="g"></i>Marked correct</span>
+          <span class="lg-mark" hidden><i class="b"></i>Marked wrong</span>
+        </div>
+        <div class="prog" id="cxProg"></div>
+        <button class="cbtn warn" id="cxSubmitSide">Submit exam</button>
+      </aside>
+    </div>
+  </section>
+
+  <section id="end" class="end" hidden>
+    <header class="mast">
+      <p class="kicker" id="endEyebrow">Run complete</p>
+      <h1 id="endTitle">Nice run</h1>
+    </header>
+    <div class="stats" id="stats"></div>
+    <div class="actions">
+      <button class="btn pri" id="againFull">Play again<span>same mode, new shuffle</span></button>
+      <button class="btn" id="againMissed">Retry missed<span id="againMissedLbl"></span></button>
+      <button class="btn" id="homeBtn">Home<span>pick another mode</span></button>
+    </div>
+    <a class="reflink" href="https://itexamanswers.net/cybersecurity-essentials-course-final-exam-answers.html" target="_blank" rel="noopener">Compare with the reference exam ↗</a>
+    <div class="missed" id="missedList"></div>
+  </section>
+</div>
+<div class="flash" id="flash"></div>
+
+<script>
+// Original questions written to cover the Cybersecurity Essentials final exam topics.
+// a = indexes of correct options; more than one means pick-several.
+const Q = [
+ {q:"A web server goes offline after thousands of hijacked home routers and cameras flood it with traffic at once. What kind of attack is this?", o:["DDoS","SQL injection","ARP poisoning","Phishing"], a:[0], x:"A distributed denial of service comes from many compromised hosts (a botnet) controlled by one attacker. One source would be a plain DoS."},
+ {q:"Someone calls the help desk pretending to be a stressed executive who needs a password reset right now. Which technique is this?", o:["Social engineering","Packet sniffing","Brute force","Buffer overflow"], a:[0], x:"Social engineering manipulates people instead of systems. Urgency and authority are its classic pressure tools."},
+ {q:"An attacker forges the source address on packets so a server believes they came from a host it already trusts. What is this called?", o:["Spoofing","Spamming","Sniffing","Shoulder surfing"], a:[0], x:"Spoofing is impersonating a trusted source to abuse an existing trust relationship. Sniffing only listens."},
+ {q:"A penetration test turns up a backdoor on a production server. What should the team look for first as a sign of compromise?", o:["User accounts nobody created through the normal process","Whether the server's fans are working","How long the server has been up","Whether the wallpaper policy applied"], a:[0], x:"Unauthorized accounts are a key indicator of compromise. Attackers create them to keep access after the backdoor is found."},
+ {q:"After an employee runs a downloaded file, the network slows down as the malware copies itself to other machines with no help from a host file. What is it?", o:["Worm","Virus","Trojan horse","Adware"], a:[0], x:"Worms replicate on their own across networks and eat bandwidth. A virus needs a host program to attach to."},
+ {q:"Which statement about a cryptographic hash function is true?", o:["Its output is a fixed length and cannot be reversed to get the input","It can be decrypted if you have the right key","Its output gets longer as the input gets longer","Different inputs always produce the same output"], a:[0], x:"Hashes are one-way and fixed length. SHA-256 always gives 256 bits whether you hash one word or a whole disk image."},
+ {q:"Developers need realistic customer records in a test environment without seeing real customer data. Which technique fits?", o:["Data masking (substitution)","Steganography","Data deduplication","Full disk encryption"], a:[0], x:"Data masking swaps real values for realistic fake ones, so the test data behaves like production but exposes nothing."},
+ {q:"Which THREE are logical (technical) access controls?", o:["Firewall rules","Encryption","Intrusion detection system","Security guards","Perimeter fences","Locked server room door"], a:[0,1,2], x:"Logical controls are software and hardware that limit access to systems and data. Guards, fences and locks are physical controls."},
+ {q:"Which TWO technologies can verify an employee's identity at a door or login?", o:["Fingerprint reader","Smart card reader","SHA-256 hash","Load balancer","Packet filter"], a:[0,1], x:"Biometrics and smart cards prove who someone is. A hash algorithm checks integrity, not identity."},
+ {q:"Two users pick the exact same password, yet their stored hashes are different. What made that happen?", o:["Salting","Base64 encoding","Compression","Truncating the hash"], a:[0], x:"A salt is a random value added to each password before hashing, so identical passwords give different hashes. This defeats rainbow tables."},
+ {q:"What is the name for the science of both making and breaking secret codes?", o:["Cryptology","Cryptography","Cryptanalysis","Steganography"], a:[0], x:"Cryptology covers both. Cryptography is making codes, cryptanalysis is breaking them, and steganography is hiding that a message exists."},
+ {q:"Alice wants to send Bob a message that only Bob can read, using asymmetric encryption. Which key does Alice encrypt with?", o:["Bob's public key","Bob's private key","Alice's private key","Alice's public key"], a:[0], x:"Encrypt with the recipient's public key. Only the matching private key, which only Bob holds, can decrypt it."},
+ {q:"Which THREE are the recognized states of data?", o:["At rest","In transit","In process","Encrypted","Classified","Compressed"], a:[0,1,2], x:"Data is stored (at rest), moving across a network (in transit), or being used by a CPU (in process). Each state needs its own protections."},
+ {q:"Passwords, passphrases and PINs are examples of which security function?", o:["Authentication","Authorization","Accounting","Availability"], a:[0], x:"They prove who you are, which is authentication (something you know). Authorization decides what you may do afterward."},
+ {q:"Which hashing method also needs a shared secret key, so it proves both integrity and authenticity?", o:["HMAC","MD5","SHA-1","CRC32"], a:[0], x:"HMAC mixes a secret key into the hash. Without the key an attacker cannot produce a valid code, even if they change the data."},
+ {q:"Which kind of cipher encrypts data one bit or one byte at a time?", o:["Stream cipher","Block cipher","Hash function","Transposition grid"], a:[0], x:"Stream ciphers work on small units continuously and are usually fast. Block ciphers like AES work on fixed-size blocks."},
+ {q:"A company must encrypt a huge volume of confidential data quickly. Which approach fits best?", o:["Symmetric encryption","Asymmetric encryption","Hashing","Digital signatures"], a:[0], x:"Symmetric algorithms such as AES are far faster than asymmetric ones, so they are used for bulk data."},
+ {q:"Which block cipher uses 128-bit blocks, supports 128, 192 or 256-bit keys, and is approved by the US government for classified data?", o:["AES","DES","3DES","RC4"], a:[0], x:"AES replaced DES. DES has a 56-bit key and is broken. RC4 is a stream cipher."},
+ {q:"You want to verify a downloaded ISO file with the strongest hash on this list. Which one?", o:["SHA-256","MD5","SHA-1","CRC32"], a:[0], x:"MD5 and SHA-1 have known collision attacks, and CRC32 only catches accidental errors. SHA-256 is the strongest here."},
+ {q:"Smart cards and biometric readers fall under which type of access control?", o:["Technological (logical)","Administrative","Physical","Deterrent"], a:[0], x:"The course groups smart cards and biometrics as technological controls. Administrative controls are policies and procedures."},
+ {q:"An attacker tries every possible character combination until a password works. What is this?", o:["Brute-force attack","Dictionary attack","Rainbow table attack","Phishing"], a:[0], x:"Brute force tries everything and always succeeds eventually. Long passwords and account lockout make 'eventually' impractical."},
+ {q:"Which Wi-Fi security standard made AES with CCMP mandatory?", o:["WPA2","WEP","WPA","WPS"], a:[0], x:"WPA2 requires AES-CCMP. WEP used weak RC4, and the original WPA defaulted to TKIP."},
+ {q:"Home workers need secure command-line access to company servers. Which protocol should they use?", o:["SSH","Telnet","FTP","HTTP"], a:[0], x:"SSH encrypts the whole session. Telnet sends everything, passwords included, in plaintext."},
+ {q:"Mutual authentication, where both sides verify each other, mainly stops which attack?", o:["Man-in-the-middle","Denial of service","Brute force","Ransomware"], a:[0], x:"If both ends must prove their identity, an attacker in the middle cannot pose as either one."},
+ {q:"Remote staff send sensitive files from public Wi-Fi to headquarters. What best protects confidentiality on the way?", o:["A VPN","RAID 5","Network access control","A load balancer"], a:[0], x:"A VPN builds an encrypted tunnel across the untrusted network. RAID protects availability, not confidentiality."},
+ {q:"Which TWO Wi-Fi security protocols can use AES encryption?", o:["WPA2","WPA","WEP","WPS","Open (no security)"], a:[0,1], x:"WPA2 requires AES-CCMP. The original WPA defaulted to TKIP but also supports AES, so the course counts both. WEP uses RC4, and WPS is a setup method, not encryption."},
+ {q:"What does BYOD mean?", o:["Employees use their personal devices for work","The company buys every employee a device","Backups are kept on outside drives","Devices are bought from one vendor only"], a:[0], x:"Bring Your Own Device. It is convenient but adds risk, since the company controls less of the device."},
+ {q:"Before a laptop is allowed on the network, the system checks that its antivirus is installed and up to date. What technology does this?", o:["NAC","NAT","VLAN","DHCP"], a:[0], x:"Network Access Control checks a device's health and policy compliance before giving it network access."},
+ {q:"A web form refuses a birth year like 3025. Which control is enforcing this?", o:["Validation rule","Hashing","Data masking","Encryption"], a:[0], x:"Validation rules limit what can be entered in a field. They protect integrity by keeping data accurate, complete and consistent."},
+ {q:"How does an online store prove its identity to customers before they enter card details?", o:["A digital certificate","Salting","A shared symmetric key","A CAPTCHA"], a:[0], x:"A certificate signed by a trusted CA binds the store's name to its public key, which is what the browser padlock checks."},
+ {q:"On a standalone Windows PC that is not in a domain, where do you set minimum password length and account lockout?", o:["Local Security Policy tool","Group Policy from a domain controller","Task Manager","Event Viewer"], a:[0], x:"secpol.msc manages local policy on non-domain machines. Domain machines get these settings from Group Policy instead."},
+ {q:"What stops someone from later denying they signed a document?", o:["A digital signature","Symmetric encryption","Salting","Steganography"], a:[0], x:"Only the signer's private key could have made the signature. That gives non-repudiation, plus authenticity and integrity."},
+ {q:"What does the X.509 standard define?", o:["The format of digital certificates","Wi-Fi encryption","Password hashing","VPN tunnel modes"], a:[0], x:"X.509 is the standard format for public-key certificates, the same ones used in TLS."},
+ {q:"How does an organization keep services available when parts of the system fail?", o:["Build system resiliency","Encrypt all data at rest","Enforce least privilege","Classify assets by value"], a:[0], x:"Resiliency and fault tolerance (redundant parts, failover) keep systems running through faults. The others protect confidentiality."},
+ {q:"A fence about 1 meter (3 to 4 feet) high mainly protects against whom?", o:["Casual trespassers","Determined intruders","Vehicles ramming the gate","Experienced climbers"], a:[0], x:"Low fences only deter casual trespassers. Around 2.4 m (8 ft) with barbed wire is what stops determined intruders."},
+ {q:"In biometrics, what is the crossover error rate?", o:["The point where false acceptance equals false rejection","The rate of sensor hardware failures","The percentage of users who refuse to enroll","The time a scan takes to complete"], a:[0], x:"CER is where FAR and FRR meet. A lower CER means a more accurate biometric system."},
+ {q:"A 'five nines' availability target means what?", o:["99.999% uptime, about 5 minutes of downtime a year","Five backup copies of all data","Five layers of firewalls","Systems are patched within five days"], a:[0], x:"Five nines is 99.999% availability, used for critical systems such as hospital or financial services."},
+ {q:"Which of these is a natural disaster?", o:["Typhoon","Power grid failure","Labor strike","Ransomware outbreak"], a:[0], x:"Natural disasters come from nature: typhoons, earthquakes, floods. The others are human-caused or infrastructure disruptions."},
+ {q:"After a flood, the team restores the data center from offsite backups. Which type of disaster recovery control is this?", o:["Corrective","Detective","Deterrent","Directive"], a:[0], x:"Corrective controls restore systems after an incident. Keeping backups offsite is what makes this recovery possible."},
+ {q:"Which step is critical in a business impact analysis?", o:["Deciding how long each critical function can be down","Buying cyber insurance","Choosing a firewall vendor","Writing the acceptable use policy"], a:[0], x:"A BIA works out how important each function is and how fast it must be back (recovery time objectives)."},
+ {q:"Which is an example of a business continuity plan in action?", o:["Moving critical systems to another site while the main one is repaired","Buying insurance against data breaches","Adding a taller fence","Deleting old log files"], a:[0], x:"Business continuity keeps operations running another way during a disruption. Insurance is risk transfer."},
+ {q:"Which TWO values do you multiply to get annual loss expectancy (ALE)?", o:["Single loss expectancy (SLE)","Annualized rate of occurrence (ARO)","Recovery time objective (RTO)","Mean time between failures","Cost of the firewall"], a:[0,1], x:"ALE = SLE × ARO: what one incident costs times how often it is expected per year."},
+ {q:"Labeling information by its value and sensitivity, such as public or confidential, is called what?", o:["Asset classification","Asset standardization","Risk transfer","Data masking"], a:[0], x:"Classification sorts assets by importance and sensitivity so each class gets the right protection."},
+ {q:"Antimalware scans files and alerts the team when it finds something malicious. In that role, what type of control is it?", o:["Detective","Deterrent","Compensating","Directive"], a:[0], x:"A control that identifies events that are happening or have happened is detective."},
+ {q:"When would an organization rely on a detective control?", o:["To spot prohibited activity on the network","To stop a guard from sleeping on shift","To restore a crashed server","To shift risk to an insurer"], a:[0], x:"Detective controls find events such as unauthorized activity. Restoring is corrective and insuring is risk transfer."},
+ {q:"IT only allows systems built from a defined list of approved hardware and software. What is this practice called?", o:["Asset standardization","Asset classification","BYOD","Risk acceptance"], a:[0], x:"Standardization limits the environment to known, approved assets, which makes them easier to secure and patch."},
+ {q:"A company outsources payroll and buys insurance to cover a possible breach. Which risk strategy is this?", o:["Risk transfer","Risk avoidance","Risk acceptance","Risk mitigation"], a:[0], x:"Transfer moves the financial impact to a third party such as an insurer or outsourcer."},
+ {q:"Which standards family gives a framework for an information security management system (ISMS)?", o:["ISO/IEC 27000 series","X.509","IEEE 802.11","ISO 9001"], a:[0], x:"ISO/IEC 27001 and 27002 define ISMS requirements and controls. ISO 9001 covers quality management."},
+ {q:"An auditor says a company's cybersecurity program has no overall blueprint. What document is missing?", o:["A master cybersecurity policy","A firewall rule set","An incident ticket queue","A backup schedule"], a:[0], x:"The master policy is the strategic plan that the program's controls and standards are built from."},
+ {q:"Which framework came out of a multi-year US federal effort to help organizations manage cybersecurity risk?", o:["NIST Cybersecurity Framework","ISO 9001","OWASP Top 10","PCI DSS"], a:[0], x:"NIST built the Cybersecurity Framework (Identify, Protect, Detect, Respond, Recover, and Govern in 2.0) with industry input."}
+];
+
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let sound = store.get('cr.sound', true);
+let actx = null;
+function beep(freq, dur, type, vol) {
+  if (!sound) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = type || 'sine'; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol || .08, actx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.0001, actx.currentTime + dur);
+    o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime + dur);
+  } catch (e) {}
+}
+const sfx = {
+  ok() { beep(660, .12, 'triangle'); setTimeout(() => beep(990, .18, 'triangle'), 110); },
+  no() { beep(220, .25, 'sawtooth', .05); },
+  tick() { beep(1200, .04, 'square', .025); },
+  pick() { beep(520, .05, 'triangle', .05); }
+};
+
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+let S = null, raf = 0, t0 = 0, lastTick = -1, introTimer = 0;
+
+function buildItem(id) {
+  const src = Q[id];
+  const order = shuffle(src.o.map((_, i) => i));
+  return { id, order };
+}
+function view(it) {
+  const src = Q[it.id];
+  return { q: src.q, x: src.x, opts: it.order.map(i => src.o[i]), correct: it.order.map((i, k) => src.a.includes(i) ? k : -1).filter(k => k >= 0), multi: src.a.length > 1 };
+}
+
+function startRun(mode, ids) {
+  if (!ids.length) return;
+  S = { mode, deck: ids.map(buildItem), i: 0, score: 0, streak: 0, best: 0, right: 0, times: [], res: [], sel: [], phase: 'intro' };
+  show('game');
+  renderQ();
+}
+
+function show(which) { ['home', 'game', 'end', 'classic'].forEach(s => $(s).hidden = s !== which); window.scrollTo(0, 0); }
+
+function limitFor(v) { return v.multi ? 30 : 20; }
+
+function renderQ() {
+  cancelAnimationFrame(raf); clearTimeout(introTimer);
+  const it = S.deck[S.i], v = view(it);
+  S.sel = []; S.phase = 'intro'; lastTick = -1;
+  $('hudN').textContent = (S.i + 1) + ' / ' + S.deck.length;
+  $('hudScore').textContent = S.score.toLocaleString();
+  setStreak();
+  $('qText').textContent = v.q;
+  const tag = $('qTag');
+  tag.textContent = v.multi ? 'Pick ' + v.correct.length : 'Pick 1';
+  tag.classList.toggle('multi', v.multi);
+  $('clock').textContent = limitFor(v);
+  const rail = $('rail'); rail.style.transform = 'scaleX(1)'; rail.className = '';
+  const tiles = $('tiles'); tiles.innerHTML = ''; tiles.className = 'tiles intro';
+  v.opts.forEach((txt, k) => {
+    const b = document.createElement('button');
+    b.className = 'tile c' + k; b.id = 'tile' + k; b.disabled = true;
+    b.innerHTML = '<span class="kc" aria-hidden="true">' + (k + 1) + '</span>';
+    const s = document.createElement('span'); s.textContent = txt; b.appendChild(s);
+    b.addEventListener('click', () => pick(k));
+    tiles.appendChild(b);
+  });
+  const lock = $('lockBtn'); lock.hidden = !v.multi; lock.disabled = true; lock.textContent = 'Pick ' + v.correct.length + ' more';
+  $('revealBox').innerHTML = '';
+  introTimer = setTimeout(begin, reduceMotion ? 400 : 1500);
+}
+
+function begin() {
+  if (!S || S.phase !== 'intro') return;
+  S.phase = 'answer';
+  $('tiles').className = 'tiles';
+  document.querySelectorAll('.tile').forEach(b => b.disabled = false);
+  t0 = performance.now();
+  raf = requestAnimationFrame(tick);
+}
+
+function tick() {
+  if (!S || S.phase !== 'answer') return;
+  const v = view(S.deck[S.i]), lim = limitFor(v);
+  const el = (performance.now() - t0) / 1000, left = Math.max(0, lim - el);
+  const rail = $('rail');
+  rail.style.transform = 'scaleX(' + (left / lim) + ')';
+  rail.className = left / lim < .2 ? 'crit' : left / lim < .45 ? 'warn' : '';
+  const sec = Math.ceil(left);
+  $('clock').textContent = sec;
+  if (sec !== lastTick && sec <= 5 && sec > 0) sfx.tick();
+  lastTick = sec;
+  if (el >= lim) { finish(null); return; }
+  raf = requestAnimationFrame(tick);
+}
+
+function pick(k) {
+  if (!S || S.phase !== 'answer') return;
+  const v = view(S.deck[S.i]);
+  if (!v.multi) { finish([k]); return; }
+  const at = S.sel.indexOf(k);
+  if (at >= 0) S.sel.splice(at, 1); else if (S.sel.length < v.correct.length) S.sel.push(k); else return;
+  sfx.pick();
+  const atCap = S.sel.length >= v.correct.length;
+  document.querySelectorAll('.tile').forEach((b, i) => { b.classList.toggle('sel', S.sel.includes(i)); b.classList.toggle('capped', atCap && !S.sel.includes(i)); });
+  const lock = $('lockBtn');
+  lock.disabled = S.sel.length !== v.correct.length;
+  lock.textContent = atCap ? 'Lock in (' + S.sel.length + '/' + v.correct.length + ')' : 'Pick ' + (v.correct.length - S.sel.length) + ' more';
+}
+
+function finish(sel) {
+  if (!S || S.phase !== 'answer') return;
+  cancelAnimationFrame(raf);
+  S.phase = 'reveal';
+  const v = view(S.deck[S.i]), lim = limitFor(v);
+  const el = Math.min(lim, (performance.now() - t0) / 1000);
+  let frac = 0;
+  if (sel) {
+    const hits = sel.filter(k => v.correct.includes(k)).length;
+    const wrong = sel.length - hits;
+    frac = Math.max(0, (hits - wrong) / v.correct.length);
+    S.times.push(el);
+  }
+  const base = Math.round(1000 * (1 - (el / lim) / 2));
+  let pts = sel ? Math.round(base * frac) : 0, bonus = 0;
+  const full = frac === 1;
+  if (full) { S.streak++; S.right++; bonus = Math.min((S.streak - 1) * 100, 500); pts += bonus; }
+  else S.streak = 0;
+  S.best = Math.max(S.best, S.streak);
+  S.score += pts;
+  S.res.push({ id: S.deck[S.i].id, full, pts });
+
+  const tiles = $('tiles'); tiles.className = 'tiles done';
+  document.querySelectorAll('.tile').forEach((b, i) => {
+    b.disabled = true;
+    if (v.correct.includes(i)) b.classList.add('right');
+    else if (sel && sel.includes(i)) b.classList.add('wrongpick');
+  });
+  $('lockBtn').hidden = true;
+
+  const verdict = !sel ? "Time's up" : full ? 'Correct' : frac > 0 ? 'Partly right' : 'Wrong';
+  const ok = full;
+  const box = $('revealBox');
+  box.innerHTML = '';
+  const r = document.createElement('div'); r.className = 'reveal ' + (ok ? 'ok' : 'no');
+  const vd = document.createElement('div'); vd.className = 'verdict';
+  vd.innerHTML = '<b></b><span class="pts"></span><span class="bonus"></span>';
+  vd.querySelector('b').textContent = verdict;
+  vd.querySelector('.pts').textContent = '+' + pts.toLocaleString();
+  vd.querySelector('.bonus').textContent = bonus ? 'includes streak bonus +' + bonus : (sel ? el.toFixed(1) + 's' : '');
+  const why = document.createElement('div'); why.className = 'why'; why.textContent = 'Why';
+  const p = document.createElement('p'); p.textContent = v.x;
+  const nb = document.createElement('button'); nb.className = 'next'; nb.id = 'nextBtn';
+  nb.textContent = S.i + 1 < S.deck.length ? 'Next question' : 'See results';
+  nb.addEventListener('click', advance);
+  r.append(vd, why, p, nb); box.appendChild(r);
+  $('hudScore').textContent = S.score.toLocaleString();
+  setStreak();
+  const f = $('flash'); f.className = 'flash'; void f.offsetWidth; f.className = 'flash ' + (ok ? 'ok' : 'no');
+  ok ? sfx.ok() : sfx.no();
+  nb.focus({ preventScroll: true });
+  if (window.innerWidth < 700) r.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'nearest' });
+}
+
+function setStreak() {
+  const s = $('hudStreak'); s.textContent = S.streak; s.dataset.on = S.streak > 1 ? '1' : '0';
+}
+
+function advance() {
+  if (!S || S.phase !== 'reveal') return;
+  if (S.i + 1 < S.deck.length) { S.i++; renderQ(); } else endRun();
+}
+
+function endRun() {
+  cancelAnimationFrame(raf); clearTimeout(introTimer);
+  S.phase = 'end';
+  const n = S.res.length, acc = n ? Math.round(S.right / n * 100) : 0;
+  const avg = S.times.length ? (S.times.reduce((a, b) => a + b, 0) / S.times.length) : 0;
+  const missed = S.res.filter(r => !r.full).map(r => r.id);
+  store.set('cr.missed', missed);
+  const best = store.get('cr.best', { score: 0, acc: 0 });
+  const isBest = S.mode === 'full' && n === Q.length && S.score > best.score;
+  if (isBest) store.set('cr.best', { score: S.score, acc, date: new Date().toISOString().slice(0, 10) });
+
+  $('endEyebrow').textContent = (S.mode === 'full' ? 'Full run' : S.mode === 'quick' ? 'Quick round' : 'Missed questions') + ' · ' + n + ' answered';
+  $('endTitle').textContent = acc >= 90 ? 'Exam ready' : acc >= 75 ? 'Solid run' : acc >= 50 ? 'Getting there' : 'Keep drilling';
+  const stats = [
+    [S.score.toLocaleString(), 'Points', isBest],
+    [acc + '%', 'Accuracy'],
+    [S.right + ' / ' + n, 'Fully correct'],
+    [S.best, 'Best streak'],
+    [avg ? avg.toFixed(1) + 's' : 'n/a', 'Avg answer time']
+  ];
+  $('stats').innerHTML = '';
+  stats.forEach(([v, l, hi]) => {
+    const d = document.createElement('div'); d.className = 'stat' + (hi ? ' hi' : '');
+    d.innerHTML = '<span class="v"></span><span class="l"></span>';
+    d.querySelector('.v').textContent = v; d.querySelector('.l').textContent = hi ? l + ' · new best' : l;
+    $('stats').appendChild(d);
+  });
+  $('againMissed').disabled = !missed.length;
+  $('againMissedLbl').textContent = missed.length ? missed.length + ' question' + (missed.length > 1 ? 's' : '') + ' to fix' : 'Nothing missed';
+  const list = $('missedList'); list.innerHTML = '';
+  if (missed.length) {
+    const h = document.createElement('h3'); h.textContent = 'Review what you missed'; list.appendChild(h);
+    missed.forEach(id => {
+      const src = Q[id];
+      const d = document.createElement('div'); d.className = 'miss';
+      d.innerHTML = '<span class="mq"></span><span class="ma"></span><span class="mx"></span>';
+      d.querySelector('.mq').textContent = src.q;
+      d.querySelector('.ma').textContent = 'Answer: ' + src.a.map(i => src.o[i]).join(' + ');
+      d.querySelector('.mx').textContent = src.x;
+      list.appendChild(d);
+    });
+  }
+  show('end');
+  refreshHome();
+}
+
+function refreshHome() {
+  const missed = store.get('cr.missed', []);
+  $('playMissed').disabled = !missed.length;
+  $('missedLbl').textContent = missed.length ? missed.length + ' from your last run' : 'Play a run first';
+  const best = store.get('cr.best', null);
+  $('bestLine').innerHTML = '';
+  if (best && best.score) {
+    const a = document.createElement('span'); a.innerHTML = 'Best full run <b></b>'; a.querySelector('b').textContent = best.score.toLocaleString() + ' pts';
+    const b = document.createElement('span'); b.innerHTML = 'Accuracy <b></b>'; b.querySelector('b').textContent = best.acc + '%';
+    $('bestLine').append(a, b);
+  }
+  [['cr.classic', 'cr.classicBest', 'classicLbl', 'No timer · 50 questions + 6 drag-and-drop'], ['cr.practiceRun', 'cr.practiceBest', 'practiceLbl', 'Like Classic, but each answer is marked when you submit it']].forEach(([key, bestKey, lbl, def]) => {
+    const cs = store.get(key, null), cb = store.get(bestKey, 0);
+    const inProg = cs && cs.items && !cs.submitted && cs.ans && Object.keys(cs.ans).length;
+    $(lbl).textContent = (inProg ? 'Resume at question ' + (cs.i + 1) : def) + (cb ? ' · best ' + cb + '%' : '');
+  });
+  $('soundBtn').textContent = 'Sound: ' + (sound ? 'on' : 'off');
+  $('soundBtn').setAttribute('aria-pressed', String(sound));
+}
+
+const allIds = () => Q.map((_, i) => i);
+$('playFull').onclick = () => startRun('full', shuffle(allIds()));
+$('playQuick').onclick = () => startRun('quick', shuffle(allIds()).slice(0, 15));
+$('playMissed').onclick = () => startRun('missed', shuffle(store.get('cr.missed', [])));
+$('againFull').onclick = () => S && S.mode === 'quick' ? startRun('quick', shuffle(allIds()).slice(0, 15)) : startRun('full', shuffle(allIds()));
+$('againMissed').onclick = () => startRun('missed', shuffle(store.get('cr.missed', [])));
+$('homeBtn').onclick = () => { show('home'); refreshHome(); };
+$('quitBtn').onclick = () => { if (S && S.res.length) endRun(); else { cancelAnimationFrame(raf); clearTimeout(introTimer); S = null; show('home'); } };
+$('lockBtn').onclick = () => { if (S && !$('lockBtn').disabled) finish(S.sel.slice()); };
+$('soundBtn').onclick = () => { sound = !sound; store.set('cr.sound', sound); refreshHome(); };
+
+document.addEventListener('keydown', e => {
+  if (!S || $('game').hidden) return;
+  if (e.key >= '1' && e.key <= '6') { const k = +e.key - 1; if ($('tile' + k)) { e.preventDefault(); pick(k); } }
+  else if (e.key === 'Enter') {
+    if (S.phase === 'answer' && !$('lockBtn').hidden && !$('lockBtn').disabled) { e.preventDefault(); finish(S.sel.slice()); }
+    else if (S.phase === 'reveal') { e.preventDefault(); advance(); }
+  }
+});
+
+// ---------- Classic exam (no timer) ----------
+// Original drag-and-drop matching items on the same course topics. pairs: [description, item].
+const M = [
+ {q:"Match each attack to its description.", after:4, pairs:[["A fake email that looks like it came from your bank","Phishing"],["A phone call from someone posing as IT support","Vishing"],["A text message with a link to a fake delivery site","Smishing"],["Tampered DNS sends users to a fake site even when they type the right address","Pharming"]], x:"Phishing is email, vishing is voice, smishing is SMS. Pharming redirects traffic without the victim clicking anything suspicious."},
+ {q:"Match each state of data to an example.", after:12, pairs:[["A customer database stored on a server's disk","At rest"],["An email crossing the internet to its recipient","In transit"],["Payroll figures loaded in RAM while totals are calculated","In process"]], x:"Stored data is at rest, moving data is in transit, and data being used by the CPU is in process."},
+ {q:"Match each cryptography method to what it does.", after:18, pairs:[["One shared key both encrypts and decrypts","Symmetric encryption"],["A public key encrypts and a private key decrypts","Asymmetric encryption"],["Produces a fixed-length value that cannot be reversed","Hashing"],["Proves who signed a message so they cannot deny it","Digital signature"]], x:"Symmetric is fast for bulk data, asymmetric solves key exchange, hashing checks integrity, and signatures give non-repudiation."},
+ {q:"Match each part of the CIA triad to a control that supports it.", after:33, pairs:[["Confidentiality","Encrypting files"],["Integrity","Comparing file hashes"],["Availability","Redundant servers with failover"]], x:"Encryption keeps data secret, hashes show whether data changed, and redundancy keeps services running."},
+ {q:"Match each security control type to an example.", after:44, pairs:[["Preventive","A firewall blocking a port"],["Detective","An IDS raising an alert"],["Corrective","Restoring files from backup"],["Deterrent","A visible CCTV camera and warning sign"]], x:"Preventive stops an incident, detective finds it, corrective fixes the damage, and deterrent discourages the attempt."},
+ {q:"Match each risk response to what the company does.", after:46, pairs:[["Avoid","Stop offering the risky service entirely"],["Transfer","Buy cyber insurance"],["Mitigate","Add controls to lower the likelihood or impact"],["Accept","Document the risk and take no further action"]], x:"Avoid removes the activity, transfer shifts the cost, mitigate reduces the risk, and accept lives with it."}
+];
+
+let C = null, ddPick = null, ddDrag = null;
+
+function classicOrder() {
+  const items = [];
+  Q.forEach((_, i) => {
+    items.push({ kind: 'mc', id: i, order: shuffle(Q[i].o.map((_, k) => k)) });
+    M.forEach((m, j) => { if (m.after === i) items.push({ kind: 'dd', id: j, order: shuffle(m.pairs.map((_, k) => k)) }); });
+  });
+  return items;
+}
+const CX_KEY = { exam: 'cr.classic', practice: 'cr.practiceRun' };
+function newClassic(kind) { return { kind, items: classicOrder(), ans: {}, flags: {}, checked: {}, i: 0, submitted: false, practice: kind === 'practice', confirm: false }; }
+function saveClassic() { if (C) store.set(CX_KEY[C.kind], C); }
+
+function openClassic(kind) {
+  kind = kind === 'practice' ? 'practice' : 'exam';
+  const saved = store.get(CX_KEY[kind], null);
+  C = saved && saved.items && !saved.submitted ? saved : newClassic(kind);
+  C.kind = kind; C.practice = kind === 'practice'; C.confirm = false; ddPick = null;
+  $('cxModeChip').innerHTML = C.practice ? '<b>Practice exam</b> · answers marked as you go' : '<b>Classic exam</b> · no timer';
+  show('classic');
+  renderClassic();
+}
+
+function itemInfo(it) {
+  if (it.kind === 'mc') {
+    const v = view(it);
+    return { v, need: v.correct.length };
+  }
+  const m = M[it.id];
+  return { m, need: m.pairs.length };
+}
+function isAnswered(k) {
+  const it = C.items[k], a = C.ans[k];
+  if (!a) return false;
+  if (it.kind === 'mc') return a.length > 0;
+  return Object.keys(a).length === M[it.id].pairs.length;
+}
+function scoreItem(k) {
+  const it = C.items[k], a = C.ans[k];
+  if (it.kind === 'mc') {
+    const { v } = itemInfo(it); const sel = a || [];
+    const hits = sel.filter(x => v.correct.includes(x)).length, wrong = sel.length - hits;
+    return Math.max(0, (hits - wrong) / v.correct.length);
+  }
+  const pairs = M[it.id].pairs; let ok = 0;
+  pairs.forEach((_, slot) => { if (a && a[slot] === slot) ok++; });
+  return ok / pairs.length;
+}
+
+function renderClassic() {
+  if (C.submitted) { renderClassicResults(); return; }
+  const k = C.i, it = C.items[k], main = $('cxMain');
+  const checked = !!C.checked[k];
+  main.innerHTML = '';
+  const top = document.createElement('div'); top.className = 'cx-top';
+  const pos = document.createElement('span'); pos.innerHTML = 'Question <b></b> of <b></b>';
+  pos.querySelectorAll('b')[0].textContent = k + 1; pos.querySelectorAll('b')[1].textContent = C.items.length;
+  const flag = document.createElement('button'); flag.className = 'cx-flag'; flag.id = 'cxFlag';
+  flag.setAttribute('aria-pressed', String(!!C.flags[k])); flag.textContent = C.flags[k] ? 'Flagged for review' : 'Flag for review';
+  flag.onclick = () => { C.flags[k] = !C.flags[k]; saveClassic(); renderClassic(); };
+  top.append(pos, flag); main.appendChild(top);
+
+  const h = document.createElement('h2');
+  const hint = document.createElement('p'); hint.className = 'cx-hint';
+  if (it.kind === 'mc') {
+    const { v } = itemInfo(it);
+    h.textContent = v.q;
+    const need = v.correct.length, sel = C.ans[k] || [];
+    const full = v.multi && sel.length >= need;
+    hint.textContent = v.multi
+      ? 'Choose ' + ['zero', 'one', 'two', 'three', 'four'][need] + '. ' + sel.length + ' of ' + need + ' selected' + (full && !checked ? '. Uncheck one to change your pick.' : '.')
+      : 'Choose one.';
+    main.append(h, hint);
+    const box = document.createElement('div'); box.className = 'cx-opts'; box.setAttribute('role', v.multi ? 'group' : 'radiogroup');
+    v.opts.forEach((txt, o) => {
+      const lab = document.createElement('label'); lab.className = 'cx-opt';
+      const inp = document.createElement('input'); inp.type = v.multi ? 'checkbox' : 'radio'; inp.name = 'cxq'; inp.id = 'cxo' + o;
+      const capped = full && !sel.includes(o);
+      inp.checked = sel.includes(o); inp.disabled = checked || capped;
+      inp.onchange = () => {
+        let s = (C.ans[k] || []).slice();
+        if (v.multi) {
+          if (inp.checked && s.length >= need) { inp.checked = false; return; }
+          s = inp.checked ? s.concat(o) : s.filter(x => x !== o);
+        } else s = [o];
+        C.ans[k] = s; saveClassic(); renderClassic();
+      };
+      const t = document.createElement('span'); t.textContent = txt;
+      lab.append(inp, t);
+      if (sel.includes(o)) lab.classList.add('on');
+      if (capped && !checked) lab.classList.add('capped');
+      if (checked) { if (v.correct.includes(o)) lab.classList.add('good'); else if (sel.includes(o)) lab.classList.add('bad'); }
+      box.appendChild(lab);
+    });
+    main.appendChild(box);
+  } else {
+    const m = M[it.id];
+    h.textContent = m.q;
+    hint.textContent = 'Drag each item into the box next to its match. On a phone, tap an item and then tap a box.';
+    main.append(h, hint, renderDD(k, it, m, checked));
+  }
+
+  if (checked) {
+    const s = scoreItem(k), fb = document.createElement('div');
+    fb.className = 'feedback ' + (s === 1 ? 'ok' : 'no');
+    fb.innerHTML = '<b></b><span></span>';
+    fb.querySelector('b').textContent = s === 1 ? 'Correct' : s > 0 ? 'Partly correct' : 'Incorrect';
+    fb.querySelector('span').textContent = it.kind === 'mc' ? Q[it.id].x : M[it.id].x;
+    main.appendChild(fb);
+  }
+
+  if (C.confirm) {
+    const un = C.items.filter((_, i) => !isAnswered(i)).length, fl = Object.values(C.flags).filter(Boolean).length;
+    const cf = document.createElement('div'); cf.className = 'confirm';
+    const p = document.createElement('span');
+    p.textContent = (un ? un + ' question' + (un > 1 ? 's are' : ' is') + ' not answered. ' : 'Every question is answered. ') + (fl ? fl + ' flagged for review. ' : '') + 'Submit and see your score?';
+    const r = document.createElement('div'); r.className = 'r';
+    const yes = document.createElement('button'); yes.className = 'cbtn warn'; yes.textContent = 'Submit exam'; yes.onclick = submitClassic;
+    const no = document.createElement('button'); no.className = 'cbtn'; no.textContent = 'Keep working'; no.onclick = () => { C.confirm = false; renderClassic(); };
+    r.append(yes, no); cf.append(p, r); main.appendChild(cf);
+  }
+
+  const nav = document.createElement('div'); nav.className = 'cx-nav';
+  const prev = document.createElement('button'); prev.className = 'cbtn'; prev.textContent = 'Previous'; prev.disabled = k === 0;
+  prev.onclick = () => goClassic(k - 1);
+  const r = document.createElement('div'); r.className = 'r';
+  if (C.practice && !checked) {
+    const chk = document.createElement('button'); chk.className = 'cbtn pri'; chk.id = 'cxCheck'; chk.textContent = 'Submit answer'; chk.disabled = !isAnswered(k);
+    chk.onclick = () => { C.checked[k] = true; ddPick = null; saveClassic(); renderClassic(); };
+    r.appendChild(chk);
+  }
+  const next = document.createElement('button'); next.className = 'cbtn' + (C.practice && !checked ? '' : ' pri');
+  if (k + 1 < C.items.length) { next.textContent = 'Next'; next.onclick = () => goClassic(k + 1); }
+  else { next.textContent = 'Submit exam'; next.onclick = () => { C.confirm = true; renderClassic(); }; }
+  r.appendChild(next);
+  nav.append(prev, r); main.appendChild(nav);
+
+  renderGrid();
+}
+
+function renderDD(k, it, m, checked) {
+  const a = C.ans[k] || {};
+  const wrap = document.createElement('div'); wrap.className = 'dd';
+  const slots = document.createElement('div'); slots.className = 'dd-slots';
+  m.pairs.forEach((pair, slot) => {
+    const row = document.createElement('div'); row.className = 'dd-row';
+    const d = document.createElement('div'); d.className = 'dd-desc'; d.textContent = pair[0];
+    const s = document.createElement('div'); s.className = 'dd-slot'; s.dataset.slot = slot; s.id = 'slot' + slot;
+    if (a[slot] !== undefined) {
+      s.classList.add('filled'); s.appendChild(chip(a[slot], m, checked));
+      if (checked) s.classList.add(a[slot] === slot ? 'good' : 'bad');
+    } else s.textContent = checked ? 'Not answered' : 'Drop here';
+    if (!checked) s.addEventListener('click', e => { if (e.target === s && ddPick !== null) place(k, ddPick, slot); });
+    const col = document.createElement('div'); col.style.display = 'grid'; col.style.gap = '2px'; col.appendChild(s);
+    if (checked && a[slot] !== slot) { const f = document.createElement('div'); f.className = 'dd-fix'; f.textContent = m.pairs[slot][1]; col.appendChild(f); }
+    row.append(d, col); slots.appendChild(row);
+  });
+  const pool = document.createElement('div'); pool.className = 'dd-pool'; pool.dataset.pool = '1'; pool.id = 'ddPool';
+  const placed = Object.values(a);
+  it.order.forEach(item => { if (!placed.includes(item)) pool.appendChild(chip(item, m, checked)); });
+  if (!checked) pool.addEventListener('click', e => { if (e.target === pool && ddPick !== null) place(k, ddPick, null); });
+  wrap.append(slots, pool);
+  return wrap;
+}
+
+function chip(item, m, locked) {
+  const b = document.createElement('button'); b.className = 'dd-chip'; b.textContent = m.pairs[item][1]; b.dataset.item = item;
+  if (ddPick === item) b.classList.add('picked');
+  if (locked) { b.disabled = true; return b; }
+  b.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    ddDrag = { item, x: e.clientX, y: e.clientY, el: b, ghost: null, moved: false };
+    try { b.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  b.addEventListener('pointermove', e => {
+    if (!ddDrag || ddDrag.el !== b) return;
+    if (!ddDrag.moved && Math.hypot(e.clientX - ddDrag.x, e.clientY - ddDrag.y) > 6) {
+      ddDrag.moved = true;
+      const g = b.cloneNode(true); g.classList.add('dd-ghost'); g.classList.remove('picked'); g.style.width = b.offsetWidth + 'px';
+      document.body.appendChild(g); ddDrag.ghost = g; b.style.opacity = '.35';
+    }
+    if (ddDrag.moved) {
+      ddDrag.ghost.style.left = e.clientX + 'px'; ddDrag.ghost.style.top = e.clientY + 'px';
+      document.querySelectorAll('.dd-slot.hot').forEach(s => s.classList.remove('hot'));
+      const t = document.elementFromPoint(e.clientX, e.clientY); const s = t && t.closest('.dd-slot');
+      if (s) s.classList.add('hot');
+    }
+  });
+  const end = e => {
+    if (!ddDrag || ddDrag.el !== b) return;
+    const d = ddDrag; ddDrag = null;
+    if (d.ghost) d.ghost.remove();
+    b.style.opacity = '';
+    if (!d.moved) { ddPick = ddPick === item ? null : item; renderClassic(); return; }
+    const t = document.elementFromPoint(e.clientX, e.clientY);
+    const s = t && t.closest('.dd-slot'), p = t && t.closest('.dd-pool');
+    if (s) place(C.i, item, +s.dataset.slot); else if (p) place(C.i, item, null); else renderClassic();
+  };
+  b.addEventListener('pointerup', end);
+  b.addEventListener('pointercancel', e => { if (ddDrag && ddDrag.ghost) ddDrag.ghost.remove(); ddDrag = null; b.style.opacity = ''; });
+  b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ddPick = ddPick === item ? null : item; renderClassic(); } });
+  return b;
+}
+
+function place(k, item, slot) {
+  const a = Object.assign({}, C.ans[k] || {});
+  Object.keys(a).forEach(s => { if (a[s] === item) delete a[s]; });
+  if (slot !== null) a[slot] = item;
+  C.ans[k] = a; ddPick = null; saveClassic(); renderClassic();
+}
+
+function goClassic(k) { C.i = Math.max(0, Math.min(C.items.length - 1, k)); C.confirm = false; ddPick = null; saveClassic(); renderClassic(); window.scrollTo(0, 0); }
+
+function renderGrid() {
+  const g = $('cxGrid'); g.innerHTML = '';
+  C.items.forEach((it, k) => {
+    const b = document.createElement('button'); b.className = 'gn'; b.textContent = it.kind === 'dd' ? 'D' + (k + 1) : (k + 1);
+    b.setAttribute('aria-label', 'Question ' + (k + 1) + (it.kind === 'dd' ? ', drag and drop' : ''));
+    if (it.kind === 'dd') b.classList.add('gdd');
+    if (C.submitted) { const s = scoreItem(k); b.classList.add(s === 1 ? 'good' : s > 0 ? 'part' : 'bad'); b.onclick = () => { const el = $('rv' + k); if (el) el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' }); }; }
+    else { if (C.practice && C.checked[k]) { const s = scoreItem(k); b.classList.add(s === 1 ? 'good' : s > 0 ? 'part' : 'bad'); } else if (isAnswered(k)) b.classList.add('ans'); if (C.flags[k]) b.classList.add('flag'); if (k === C.i) b.classList.add('cur'); b.onclick = () => goClassic(k); }
+    g.appendChild(b);
+  });
+  document.querySelectorAll('.lg-mark').forEach(e => e.hidden = !(C.practice || C.submitted));
+  const done = C.items.filter((_, k) => isAnswered(k)).length;
+  $('cxProg').innerHTML = '<b></b> of <b></b> answered';
+  $('cxProg').querySelectorAll('b')[0].textContent = done; $('cxProg').querySelectorAll('b')[1].textContent = C.items.length;
+  if (C.practice && !C.submitted) {
+    const ks = Object.keys(C.checked).filter(k => C.checked[k]);
+    const right = ks.filter(k => scoreItem(+k) === 1).length;
+    const line = document.createElement('div'); line.innerHTML = 'Marked so far: <b></b> correct of <b></b>';
+    line.querySelectorAll('b')[0].textContent = right; line.querySelectorAll('b')[1].textContent = ks.length;
+    $('cxProg').appendChild(line);
+  }
+  $('cxSubmitSide').textContent = C.submitted ? 'Start a new attempt' : 'Submit exam';
+}
+
+function submitClassic() {
+  C.submitted = true; C.confirm = false; ddPick = null;
+  const total = C.items.reduce((s, _, k) => s + scoreItem(k), 0);
+  const pct = Math.round(total / C.items.length * 1000) / 10;
+  C.result = { pct, total };
+  const bk = C.practice ? 'cr.practiceBest' : 'cr.classicBest';
+  const b = store.get(bk, 0); if (pct > b) store.set(bk, pct);
+  saveClassic(); renderClassic(); refreshHome(); window.scrollTo(0, 0);
+}
+
+function answerText(it, k) {
+  const a = C.ans[k];
+  if (it.kind === 'mc') { const v = view(it); return a && a.length ? a.map(o => v.opts[o]).join(' + ') : 'No answer'; }
+  const m = M[it.id]; if (!a || !Object.keys(a).length) return 'No answer';
+  return m.pairs.map((p, s) => p[0] + ' → ' + (a[s] !== undefined ? m.pairs[a[s]][1] : '(empty)')).join('; ');
+}
+function correctText(it) {
+  if (it.kind === 'mc') return Q[it.id].a.map(i => Q[it.id].o[i]).join(' + ');
+  return M[it.id].pairs.map(p => p[0] + ' → ' + p[1]).join('; ');
+}
+
+function renderClassicResults() {
+  const main = $('cxMain'); main.innerHTML = '';
+  const res = document.createElement('div'); res.className = 'cx-res';
+  const sc = document.createElement('div'); sc.className = 'cx-score';
+  const full = C.items.filter((_, k) => scoreItem(k) === 1).length;
+  sc.innerHTML = '<span class="big"></span><span></span>';
+  sc.querySelector('.big').textContent = C.result.pct + '%';
+  sc.querySelectorAll('span')[1].textContent = full + ' of ' + C.items.length + ' fully correct. Pick-several and drag-and-drop items give partial credit.';
+  const r = document.createElement('div'); r.className = 'cx-nav'; r.style.borderTop = '0'; r.style.paddingTop = '0';
+  const again = document.createElement('button'); again.className = 'cbtn pri'; again.textContent = 'Start a new attempt';
+  again.onclick = () => { C = newClassic(C.kind); saveClassic(); renderClassic(); window.scrollTo(0, 0); };
+  const home = document.createElement('button'); home.className = 'cbtn'; home.textContent = 'Back to home';
+  home.onclick = () => { show('home'); refreshHome(); };
+  r.append(again, home);
+  res.append(sc, r);
+  const h = document.createElement('p'); h.className = 'side-h'; h.textContent = 'Review every question'; res.appendChild(h);
+  C.items.forEach((it, k) => {
+    const s = scoreItem(k), d = document.createElement('div');
+    d.className = 'rv ' + (s === 1 ? 'good' : s > 0 ? 'part' : 'bad'); d.id = 'rv' + k;
+    d.innerHTML = '<span class="rq"></span><span class="ry"></span><span class="rc"></span><span class="rx"></span>';
+    d.querySelector('.rq').textContent = (k + 1) + '. ' + (it.kind === 'mc' ? Q[it.id].q : M[it.id].q);
+    d.querySelector('.ry').textContent = 'Your answer: ' + answerText(it, k);
+    d.querySelector('.rc').textContent = (s === 1 ? 'Correct: ' : 'Correct answer: ') + correctText(it);
+    d.querySelector('.rx').textContent = it.kind === 'mc' ? Q[it.id].x : M[it.id].x;
+    res.appendChild(d);
+  });
+  main.appendChild(res);
+  renderGrid();
+}
+
+$('playClassic').onclick = () => openClassic('exam');
+$('playPractice').onclick = () => openClassic('practice');
+$('cxHome').onclick = () => { saveClassic(); show('home'); refreshHome(); };
+$('cxSubmitSide').onclick = () => {
+  if (C.submitted) { C = newClassic(C.kind); saveClassic(); renderClassic(); window.scrollTo(0, 0); return; }
+  C.confirm = true; renderClassic(); window.scrollTo(0, 0);
+};
+
+function snapshot() {
+  if (!$('classic').hidden && C) { saveClassic(); return { classic: C.kind }; }
+  if (!S || S.phase === 'end') return {};
+  return { S: { mode: S.mode, deck: S.deck, i: S.i, score: S.score, streak: S.streak, best: S.best, right: S.right, times: S.times, res: S.res.slice(0, S.i) } };
+}
+function start(data) {
+  refreshHome();
+  if (data && data.classic) { openClassic(data.classic); return; }
+  if (data && data.S && data.S.deck && data.S.deck.length) {
+    S = Object.assign({ sel: [], phase: 'intro' }, data.S);
+    S.res = S.res || [];
+    show('game'); renderQ();
+  }
+}
+window.claude?.hot?.snapshot?.(snapshot);
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+</script>
+</body>
+</html>
