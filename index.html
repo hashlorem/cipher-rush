@@ -254,7 +254,7 @@ h1 { margin: 0; font-family: var(--display); font-stretch: 68%; font-weight: 800
     <header class="mast">
       <p class="kicker">Cybersecurity Essentials final exam reviewer</p>
       <h1>Cipher Rush</h1>
-      <p class="lede">The 50 questions from the Cybersecurity Essentials final, word for word, plus a short matching drill. Every question explains its answer, so you learn why, not just what.</p>
+      <p class="lede">The 50 questions from the Cybersecurity Essentials final, word for word, plus 6 drag-and-drop matches. Every question explains why the answer is right, so you learn it, not just the letter.</p>
     </header>
 
     <div class="group">
@@ -271,10 +271,9 @@ h1 { margin: 0; font-family: var(--display); font-stretch: 68%; font-weight: 800
     </div>
 
     <div class="group">
-      <div class="group-h"><h3>Untimed</h3><p>saves your place</p></div>
-      <button class="mode" id="playClassic"><span class="mt"><b>Classic exam</b><span class="md" id="classicLbl">No timer · the 50 exam questions in order</span></span><span class="go" aria-hidden="true">→</span></button>
+      <div class="group-h"><h3>Untimed</h3><p>56 items, saves your place</p></div>
+      <button class="mode" id="playClassic"><span class="mt"><b>Classic exam</b><span class="md" id="classicLbl">No timer · 50 questions + 6 drag-and-drop</span></span><span class="go" aria-hidden="true">→</span></button>
       <button class="mode" id="playPractice"><span class="mt"><b>Practice exam</b><span class="md" id="practiceLbl">Like Classic, but each answer is marked when you submit it</span></span><span class="go" aria-hidden="true">→</span></button>
-      <button class="mode" id="playDrill"><span class="mt"><b>Match drill</b><span class="md" id="drillLbl">6 matching items, drag or tap</span></span><span class="go" aria-hidden="true">→</span></button>
     </div>
 
     <div class="foot">
@@ -319,7 +318,7 @@ h1 { margin: 0; font-family: var(--display); font-stretch: 68%; font-weight: 800
           <span><i class="a"></i>Answered</span>
           <span><i></i>Not answered</span>
           <span><i class="f"></i>Flagged for review</span>
-          <span id="lgDD"><i class="d">D</i>Drag and drop</span>
+          <span><i class="d">D</i>Drag and drop</span>
           <span class="lg-mark" hidden><i class="g"></i>Marked correct</span>
           <span class="lg-mark" hidden><i class="b"></i>Marked wrong</span>
         </div>
@@ -638,9 +637,8 @@ function refreshHome() {
     const b = document.createElement('span'); b.innerHTML = 'Accuracy <b></b>'; b.querySelector('b').textContent = best.acc + '%';
     $('bestLine').append(a, b);
   }
-  [['cr.classic', 'cr.classicBest', 'classicLbl', 'No timer · the 50 exam questions in order'],
-   ['cr.practiceRun', 'cr.practiceBest', 'practiceLbl', 'Like Classic, but each answer is marked when you submit it'],
-   ['cr.drill', 'cr.drillBest', 'drillLbl', '6 matching items, drag or tap']].forEach(([key, bestKey, lbl, def]) => {
+  [['cr.classic', 'cr.classicBest', 'classicLbl', 'No timer · 50 questions + 6 drag-and-drop'],
+   ['cr.practiceRun', 'cr.practiceBest', 'practiceLbl', 'Like Classic, but each answer is marked when you submit it']].forEach(([key, bestKey, lbl, def]) => {
     const cs = store.get(key, null), cb = store.get(bestKey, 0);
     const inProg = cs && cs.v === DECK_V && cs.items && !cs.submitted && cs.ans && Object.keys(cs.ans).length;
     $(lbl).textContent = (inProg ? 'Resume at question ' + (cs.i + 1) : def) + (cb ? ' · best ' + cb + '%' : '');
@@ -682,22 +680,25 @@ const M = [
 
 let C = null, ddPick = null, ddDrag = null;
 
-function classicOrder(kind) {
-  if (kind === 'drill') return M.map((m, j) => ({ kind: 'dd', id: j, order: shuffle(m.pairs.map((_, k) => k)) }));
-  return Q.map((_, i) => ({ kind: 'mc', id: i, order: shuffle(Q[i].o.map((_, k) => k)) }));
+function classicOrder() {
+  const items = [];
+  Q.forEach((_, i) => {
+    items.push({ kind: 'mc', id: i, order: shuffle(Q[i].o.map((_, k) => k)) });
+    M.forEach((m, j) => { if (m.after === i) items.push({ kind: 'dd', id: j, order: shuffle(m.pairs.map((_, k) => k)) }); });
+  });
+  return items;
 }
-const CX_KEY = { exam: 'cr.classic', practice: 'cr.practiceRun', drill: 'cr.drill' };
-const DECK_V = 2; // bump when the item bank or deck order changes so saved attempts are dropped
-function newClassic(kind) { return { v: DECK_V, kind, items: classicOrder(kind), ans: {}, flags: {}, checked: {}, i: 0, submitted: false, practice: kind === 'practice', confirm: false }; }
+const CX_KEY = { exam: 'cr.classic', practice: 'cr.practiceRun' };
+const DECK_V = 3; // bump when the item bank or deck order changes so saved attempts are dropped
+function newClassic(kind) { return { v: DECK_V, kind, items: classicOrder(), ans: {}, flags: {}, checked: {}, i: 0, submitted: false, practice: kind === 'practice', confirm: false }; }
 function saveClassic() { if (C) store.set(CX_KEY[C.kind], C); }
-const subLabel = () => C && C.kind === 'drill' ? 'Submit drill' : 'Submit exam';
 
 function openClassic(kind) {
-  kind = kind === 'practice' ? 'practice' : kind === 'drill' ? 'drill' : 'exam';
+  kind = kind === 'practice' ? 'practice' : 'exam';
   const saved = store.get(CX_KEY[kind], null);
   C = saved && saved.v === DECK_V && saved.items && !saved.submitted ? saved : newClassic(kind);
   C.kind = kind; C.practice = kind === 'practice'; C.confirm = false; ddPick = null;
-  $('cxModeChip').innerHTML = kind === 'drill' ? '<b>Match drill</b> · drag and drop' : C.practice ? '<b>Practice exam</b> · answers marked as you go' : '<b>Classic exam</b> · no timer';
+  $('cxModeChip').innerHTML = C.practice ? '<b>Practice exam</b> · answers marked as you go' : '<b>Classic exam</b> · no timer';
   show('classic');
   renderClassic();
 }
@@ -796,7 +797,7 @@ function renderClassic() {
     const p = document.createElement('span');
     p.textContent = (un ? un + ' question' + (un > 1 ? 's are' : ' is') + ' not answered. ' : 'Every question is answered. ') + (fl ? fl + ' flagged for review. ' : '') + 'Submit and see your score?';
     const r = document.createElement('div'); r.className = 'r';
-    const yes = document.createElement('button'); yes.className = 'cbtn warn'; yes.textContent = subLabel(); yes.onclick = submitClassic;
+    const yes = document.createElement('button'); yes.className = 'cbtn warn'; yes.textContent = 'Submit exam'; yes.onclick = submitClassic;
     const no = document.createElement('button'); no.className = 'cbtn'; no.textContent = 'Keep working'; no.onclick = () => { C.confirm = false; renderClassic(); };
     r.append(yes, no); cf.append(p, r); main.appendChild(cf);
   }
@@ -812,7 +813,7 @@ function renderClassic() {
   }
   const next = document.createElement('button'); next.className = 'cbtn' + (C.practice && !checked ? '' : ' pri');
   if (k + 1 < C.items.length) { next.textContent = 'Next'; next.onclick = () => goClassic(k + 1); }
-  else { next.textContent = subLabel(); next.onclick = () => { C.confirm = true; renderClassic(); }; }
+  else { next.textContent = 'Submit exam'; next.onclick = () => { C.confirm = true; renderClassic(); }; }
   r.appendChild(next);
   nav.append(prev, r); main.appendChild(nav);
 
@@ -903,7 +904,6 @@ function renderGrid() {
     g.appendChild(b);
   });
   document.querySelectorAll('.lg-mark').forEach(e => e.hidden = !(C.practice || C.submitted));
-  $('lgDD').hidden = C.kind !== 'drill';
   const done = C.items.filter((_, k) => isAnswered(k)).length;
   $('cxProg').innerHTML = '<b></b> of <b></b> answered';
   $('cxProg').querySelectorAll('b')[0].textContent = done; $('cxProg').querySelectorAll('b')[1].textContent = C.items.length;
@@ -914,7 +914,7 @@ function renderGrid() {
     line.querySelectorAll('b')[0].textContent = right; line.querySelectorAll('b')[1].textContent = ks.length;
     $('cxProg').appendChild(line);
   }
-  $('cxSubmitSide').textContent = C.submitted ? 'Start a new attempt' : subLabel();
+  $('cxSubmitSide').textContent = C.submitted ? 'Start a new attempt' : 'Submit exam';
 }
 
 function submitClassic() {
@@ -922,7 +922,7 @@ function submitClassic() {
   const total = C.items.reduce((s, _, k) => s + scoreItem(k), 0);
   const pct = Math.round(total / C.items.length * 1000) / 10;
   C.result = { pct, total };
-  const bk = C.kind === 'drill' ? 'cr.drillBest' : C.practice ? 'cr.practiceBest' : 'cr.classicBest';
+  const bk = C.practice ? 'cr.practiceBest' : 'cr.classicBest';
   const b = store.get(bk, 0); if (pct > b) store.set(bk, pct);
   saveClassic(); renderClassic(); refreshHome(); window.scrollTo(0, 0);
 }
@@ -945,7 +945,7 @@ function renderClassicResults() {
   const full = C.items.filter((_, k) => scoreItem(k) === 1).length;
   sc.innerHTML = '<span class="big"></span><span></span>';
   sc.querySelector('.big').textContent = C.result.pct + '%';
-  sc.querySelectorAll('span')[1].textContent = full + ' of ' + C.items.length + ' fully correct. ' + (C.kind === 'drill' ? 'Each match counts on its own.' : 'Pick-several items give partial credit.');
+  sc.querySelectorAll('span')[1].textContent = full + ' of ' + C.items.length + ' fully correct. Pick-several and drag-and-drop items give partial credit.';
   const r = document.createElement('div'); r.className = 'cx-nav'; r.style.borderTop = '0'; r.style.paddingTop = '0';
   const again = document.createElement('button'); again.className = 'cbtn pri'; again.textContent = 'Start a new attempt';
   again.onclick = () => { C = newClassic(C.kind); saveClassic(); renderClassic(); window.scrollTo(0, 0); };
@@ -970,7 +970,6 @@ function renderClassicResults() {
 
 $('playClassic').onclick = () => openClassic('exam');
 $('playPractice').onclick = () => openClassic('practice');
-$('playDrill').onclick = () => openClassic('drill');
 $('cxHome').onclick = () => { saveClassic(); show('home'); refreshHome(); };
 $('cxSubmitSide').onclick = () => {
   if (C.submitted) { C = newClassic(C.kind); saveClassic(); renderClassic(); window.scrollTo(0, 0); return; }
