@@ -643,7 +643,7 @@ function refreshHome() {
    ['cr.practiceRun', 'cr.practiceBest', 'practiceLbl', 'Like Classic, but each answer is marked when you submit it'],
    ['cr.drill', 'cr.drillBest', 'drillLbl', '6 matching items, drag or tap']].forEach(([key, bestKey, lbl, def]) => {
     const cs = store.get(key, null), cb = store.get(bestKey, 0);
-    const inProg = cs && cs.items && !cs.submitted && cs.ans && Object.keys(cs.ans).length;
+    const inProg = cs && cs.v === DECK_V && cs.items && !cs.submitted && cs.ans && Object.keys(cs.ans).length;
     $(lbl).textContent = (inProg ? 'Resume at question ' + (cs.i + 1) : def) + (cb ? ' · best ' + cb + '%' : '');
   });
   $('soundBtn').textContent = 'Sound: ' + (sound ? 'on' : 'off');
@@ -688,14 +688,15 @@ function classicOrder(kind) {
   return Q.map((_, i) => ({ kind: 'mc', id: i, order: shuffle(Q[i].o.map((_, k) => k)) }));
 }
 const CX_KEY = { exam: 'cr.classic', practice: 'cr.practiceRun', drill: 'cr.drill' };
-function newClassic(kind) { return { kind, items: classicOrder(kind), ans: {}, flags: {}, checked: {}, i: 0, submitted: false, practice: kind === 'practice', confirm: false }; }
+const DECK_V = 2; // bump when the item bank or deck order changes so saved attempts are dropped
+function newClassic(kind) { return { v: DECK_V, kind, items: classicOrder(kind), ans: {}, flags: {}, checked: {}, i: 0, submitted: false, practice: kind === 'practice', confirm: false }; }
 function saveClassic() { if (C) store.set(CX_KEY[C.kind], C); }
 const subLabel = () => C && C.kind === 'drill' ? 'Submit drill' : 'Submit exam';
 
 function openClassic(kind) {
   kind = kind === 'practice' ? 'practice' : kind === 'drill' ? 'drill' : 'exam';
   const saved = store.get(CX_KEY[kind], null);
-  C = saved && saved.items && !saved.submitted ? saved : newClassic(kind);
+  C = saved && saved.v === DECK_V && saved.items && !saved.submitted ? saved : newClassic(kind);
   C.kind = kind; C.practice = kind === 'practice'; C.confirm = false; ddPick = null;
   $('cxModeChip').innerHTML = kind === 'drill' ? '<b>Match drill</b> · drag and drop' : C.practice ? '<b>Practice exam</b> · answers marked as you go' : '<b>Classic exam</b> · no timer';
   show('classic');
